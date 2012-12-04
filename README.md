@@ -17,4 +17,4 @@ into Julia-SDL.
 At the moment, this has only been tested on a 2010 Macbook running Linux
 (Fedora 17) and a custom built PC desktop running Linux (Fedora 17). Have fun!
 
---rennis250
+--rennis250 & o-jasper
