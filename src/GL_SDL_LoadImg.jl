@@ -4,9 +4,8 @@
 module GL_SDL_LoadImg
 #Loading images int GL and/or SDL.
 
-import Base.* 
 import GetC.@get_c_fun
-import AutoFFI_GL.*
+using  OpenGL
 
 export sdl_free_surface, sdl_load_img, SDLIMGLoad
 

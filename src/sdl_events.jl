@@ -4,9 +4,8 @@
 module SDL_Events
 #Loading images int GL and/or SDL.
 
-import Base.*
 import GetC.@get_c_fun
-import AutoFFI_GL.*
+using  OpenGL
 
 export initSDL, SwapAndClear, 
        mouse_x,mouse_y, poll_event,flush_events
