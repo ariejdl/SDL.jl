@@ -1,6 +1,8 @@
 #  Jasper den Ouden 02-08-2012
 # Placed in public domain.
 
+require("GetC")
+
 module SDL_Events
 #Loading images int GL and/or SDL.
 
