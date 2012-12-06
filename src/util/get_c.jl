@@ -4,27 +4,7 @@
 module GetC
 #Makes finding/loading .so files and FFI-ing C more convenient.
 
-export find_so_file_path, load_so
 export @get_c_fun
-
-#----no more module stuff.
-
-#Loads a so, and checks if it exists, if not user probably didn't run make.
-function find_so_file_path(so_file::String)
-  ret = nothing
-  try
-    ret = find_in_path(so_file)
-  catch
-    error("\n.so file seems missing, did you run make?
-File in question: $so_file
-(alternatively, didn't compile otherwise, the file wasn't available from
-your directory.)\n")
-  end
-  return ret
-end
-#dlopens using `find_so_file` to locate the file.
-load_so(so_file::String) =
-    dlopen(find_so_file_path(so_file))
 
 #TODO how to make a :: symbol
 const _of_type_sym = symbol("::")
