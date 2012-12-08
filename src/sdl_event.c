@@ -94,35 +94,35 @@ int key_index(int keysym)
 // -1, 'nothing to say' (for _some_ reason)
 int poll_event()
 {
-  SDL_Event event;
-  if( SDL_PollEvent(&event) )
-    {
-      switch(event.type)
+	SDL_Event event;
+	if( SDL_PollEvent(&event) )
 	{
-        case SDL_MOUSEMOTION:
-	  mouse_pos.x = event.button.x;
-	  mouse_pos.y = event.button.y;
-	  return _MOUSE_MOTION;
-	case SDL_MOUSEBUTTONDOWN: 
-	  return +mouse_index(event.button.button);
-	case SDL_MOUSEBUTTONUP: 
-	  return -mouse_index(event.button.button);
-        case SDL_KEYDOWN:
-	  return +key_index(event.key.keysym.sym);
-        case SDL_KEYUP:
-	  return -key_index(event.key.keysym.sym);
-          break;
-	case SDL_QUIT:
-	  return 1100;
-	case SDL_VIDEORESIZE:
-	  return 1101;
-	case SDL_VIDEOEXPOSE:
-	  return 1102;
-	case SDL_SYSWMEVENT:
-	  return 1103;
-	default: //NOTE: just mousedown atm.
-	  return _ID_FAILED;
+		switch(event.type)
+		{
+			case SDL_MOUSEMOTION:
+				mouse_pos.x = event.button.x;
+				mouse_pos.y = event.button.y;
+				return _MOUSE_MOTION;
+			case SDL_MOUSEBUTTONDOWN: 
+				return +mouse_index(event.button.button);
+			case SDL_MOUSEBUTTONUP: 
+				return -mouse_index(event.button.button);
+			case SDL_KEYDOWN:
+				return +key_index(event.key.keysym.sym);
+			case SDL_KEYUP:
+				return -key_index(event.key.keysym.sym);
+				break;
+			case SDL_QUIT:
+				return 1100;
+			case SDL_VIDEORESIZE:
+				return 1101;
+			case SDL_VIDEOEXPOSE:
+				return 1102;
+			case SDL_SYSWMEVENT:
+				return 1103;
+			default: //NOTE: just mousedown atm.
+				return _ID_FAILED;
+		}
 	}
-    }
-  return 0;
+	return 0;
 }

@@ -1,4 +1,5 @@
-load("gl_sdl.jl")
+require("SDL")
+using SDL
 
 function initGL(w,h,wintitle,icontitle)
   initSDL(w,h,wintitle,icontitle) # don't remove this. it opens a window and sets up an SDL context

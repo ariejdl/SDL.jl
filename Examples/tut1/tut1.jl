@@ -12,7 +12,7 @@ initGL()
 
 while true
 
-    SwapAndClear()
+    SDL_GL_SwapBuffers()
 
     #check key presses
     while true

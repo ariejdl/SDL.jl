@@ -1,4 +1,11 @@
-load("gl_sdl.jl")
+require("SDL")
+using SDL
+
+function initSDL(w,h,wintitle,icontitle)
+    sdl_init(SDL_INIT_VIDEO)
+    sdl_setvideomode(w, h, 0, SDL_OPENGL)
+    sdl_WM_setcaption(wintitle, C_NULL)
+end
 
 function initGL(w,h,wintitle,icontitle)
   initSDL(w,h,wintitle,icontitle) # don't remove this. it opens a window and sets up an SDL context
@@ -12,10 +19,10 @@ function initGL(w,h,wintitle,icontitle)
   glmatrixmode(GL_PROJECTION)
   glloadidentity()
 
-  #gluperspective(45.0,w/h,0.1,100.0)
+  gluperspective(45.0,w/h,0.1,100.0)
 
   glmatrixmode(GL_MODELVIEW)
-  SwapAndClear()
+  sdl_gl_swapbuffers()
 end
 
 initGL() = initGL(640,640,"Blank","Blank")
