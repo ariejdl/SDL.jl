@@ -5,8 +5,49 @@
 
 # load necessary GL/SDL routines
 
-load("initGL.jl")
-initGL()
+load("image")
+
+require("SDL")
+using SDL
+
+# initialize variables
+
+bpp       = 16
+wintitle  = "NeHe Tut 10"
+icontitle = "NeHe Tut 10"
+width     = 640
+height    = 480
+
+# open SDL window with an OpenGL context
+
+sdl_init(SDL_INIT_VIDEO)
+#videoInfo = sdl_getvideoinfo()
+videoFlags = (SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE | SDL_RESIZABLE)
+#if videoInfo.hw_available
+    videoFlags = (videoFlags | SDL_HWSURFACE)
+#else
+    #videoFlags = (videoFlags | SDL_SWSURFACE)
+#end
+#if videoInfo.blit_hw
+    videoFlags = (videoFlags | SDL_HWACCEL)
+#end
+sdl_gl_setattribute(SDL_GL_DOUBLEBUFFER, 1)
+sdl_setvideomode(width, height, bpp, videoFlags)
+sdl_wm_setcaption(wintitle, icontitle)
+
+glviewport(0, 0, width, height)
+glclearcolor(0.0, 0.0, 0.0, 0.0)
+glcleardepth(1.0)			 
+gldepthfunc(GL_LESS)	 
+glenable(GL_DEPTH_TEST)
+glshademodel(GL_SMOOTH)
+
+glmatrixmode(GL_PROJECTION)
+glloadidentity()
+
+gluperspective(45.0,width/height,0.1,100.0)
+
+glmatrixmode(GL_MODELVIEW)
 
 # initialize global variables
 
@@ -38,7 +79,7 @@ function SetupWorld(world_map::String)
                 z                    = parse_float(z)
                 u                    = parse_float(u)
                 v                    = parse_float(v)
-                sector[loop,vert,:]  = [x,y,z,u,v].*0.25
+                sector[loop,vert,:]  = [x,y,z,u,v]
                 vert                 += 1
                 line                 += 1
             end
@@ -91,9 +132,26 @@ sector1 = SetupWorld("world.txt")
 
 # load textures from images
 
-tex1 = SDLIMGLoad("mud.bmp",1)
-tex2 = SDLIMGLoad("mud.bmp",2)
-tex3 = SDLIMGLoad("mud.bmp",3)
+tex = Array(Uint8,3) # generating 3 textures
+img = imread("mud.bmp")
+glgentextures(3,tex)
+
+glbindtexture(GL_TEXTURE_2D,tex[1])
+gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+glteximage2d(GL_TEXTURE_2D, 0, 3, size(img,1), size(img,2), 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+
+glbindtexture(GL_TEXTURE_2D,tex[2])
+gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+glteximage2d(GL_TEXTURE_2D, 0, 3, size(img,1), size(img,2), 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+
+glbindtexture(GL_TEXTURE_2D,tex[3])
+gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST)
+glteximage2d(GL_TEXTURE_2D, 0, 3, size(img,1), size(img,2), 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+
+glubuild2dmipmaps(GL_TEXTURE_2D, 3, size(img,1), size(img,2), GL_RGB, GL_UNSIGNED_BYTE, img)
 
 # initialize lights
 
@@ -105,12 +163,20 @@ glenable(GL_LIGHT1)
 
 # enable texture mapping and alpha blending
 
-glenable({GL_TEXTURE_2D, GL_BLEND})
+glenable(GL_TEXTURE_2D)
+glenable(GL_BLEND)
 glblendfunc(GL_SRC_ALPHA, GL_ONE)
 
 # drawing routines
 
 while true
+    xtrans = -xpos
+    ztrans = -zpos
+    ytrans = -walkbias-0.25
+    sceneroty = 360.0 - yrot
+
+    glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glloadidentity()
 
     xtrans = -xpos
     ztrans = -zpos
@@ -122,15 +188,15 @@ while true
     gltranslate(xtrans, ytrans, ztrans)
 
     if filter == 0
-        glbindtexture(GL_TEXTURE_2D,tex1)
+        glbindtexture(GL_TEXTURE_2D,tex[1])
     elseif filter == 1
-        glbindtexture(GL_TEXTURE_2D,tex2)
+        glbindtexture(GL_TEXTURE_2D,tex[2])
     elseif filter == 2
-        glbindtexture(GL_TEXTURE_2D,tex3)
+        glbindtexture(GL_TEXTURE_2D,tex[3])
     end
 
     for face = 1:numtriangles
-        @with glprimitive(GL_TRIANGLES) begin
+        glbegin(GL_TRIANGLES)
             glnormal(0.0, 0.0, 1.0)
             x_m = sector1[face,1,1]
             y_m = sector1[face,1,2]
@@ -155,90 +221,89 @@ while true
             v_m = sector1[face,3,5]
             gltexcoord(u_m,v_m)
             glvertex(x_m,y_m,z_m)
-        end
+        glend()
     end
 
-    SwapAndClear()
+    sdl_gl_swapbuffers()
 
     # check key presses
-    while true
-        poll = poll_event()
-        @case poll begin
-            int('q') : return
-            SDL_EVENTS_DONE   : break
-        end
+    #while true
+        #poll = poll_event()
+        #@case poll begin
+            #int('q') : return
+            #SDL_EVENTS_DONE   : break
+        #end
 
-        println("Blend was: $blend")
-        blend = @case poll begin
-            int('b') : (blend ? false : true)
-            default : blend
-        end
-        println("Blend is now: $blend")
-        if !blend
-            glenable(GL_BLEND)
-            gldisable(GL_DEPTH_TEST)
-        else
-            gldisable(GL_BLEND)
-            glenable(GL_DEPTH_TEST)
-        end
+        #println("Blend was: $blend")
+        #blend = @case poll begin
+            #int('b') : (blend ? false : true)
+            #default : blend
+        #end
+        #println("Blend is now: $blend")
+        #if !blend
+            #glenable(GL_BLEND)
+            #gldisable(GL_DEPTH_TEST)
+        #else
+            #gldisable(GL_BLEND)
+            #glenable(GL_DEPTH_TEST)
+        #end
 
-        println("Light was: $light")
-        light = @case poll begin
-            int('l') : (light ? false : true)
-            default : light
-        end                                      
-        println("Light is now: $light")
-        if !light
-            gldisable(GL_LIGHTING)
-        else
-            glenable(GL_LIGHTING)
-        end
+        #println("Light was: $light")
+        #light = @case poll begin
+            #int('l') : (light ? false : true)
+            #default : light
+        #end                                      
+        #println("Light is now: $light")
+        #if !light
+            #gldisable(GL_LIGHTING)
+        #else
+            #glenable(GL_LIGHTING)
+        #end
 
-        println("Filter was: $filter")
-        filter += @case poll begin
-            int('f') : 1
-            default : 0
-        end
-        if filter > 2
-            filter = 0
-        end
-        println("Filter is now: $filter")
+        #println("Filter was: $filter")
+        #filter += @case poll begin
+            #int('f') : 1
+            #default : 0
+        #end
+        #if filter > 2
+            #filter = 0
+        #end
+        #println("Filter is now: $filter")
 
-        lookupdown += @case poll begin
-            int('w') : -0.2
-            int('s') : 1.0
-            default : 0.0
-        end
+        #lookupdown += @case poll begin
+            #int('w') : -0.2
+            #int('s') : 1.0
+            #default : 0.0
+        #end
 
-        xpos += @case poll begin
-            SDLK_UP : -sin(degrees2radians(yrot))*0.05
-            SDLK_DOWN : sin(degrees2radians(yrot))*0.05
-            default : 0.0
-        end
+        #xpos += @case poll begin
+            #SDLK_UP : -sin(degrees2radians(yrot))*0.05
+            #SDLK_DOWN : sin(degrees2radians(yrot))*0.05
+            #default : 0.0
+        #end
 
-        zpos += @case poll begin
-            SDLK_UP : -cos(degrees2radians(yrot))*0.05
-            SDLK_DOWN : cos(degrees2radians(yrot))*0.05
-            default : 0.0
-        end
+        #zpos += @case poll begin
+            #SDLK_UP : -cos(degrees2radians(yrot))*0.05
+            #SDLK_DOWN : cos(degrees2radians(yrot))*0.05
+            #default : 0.0
+        #end
 
-        walkbiasangle += @case poll begin
-            SDLK_UP : 10
-            SDLK_DOWN : 10
-            default : 0.0
-        end
-        if walkbiasangle <= 1.0
-            walkbiasangle = 359.0
-        elseif walkbiasangle >= 359.0
-            walkbiasangle = 0.0
-        end
-        walkbiasangle = sin(degrees2radians(walkbiasangle))/20.0
+        #walkbiasangle += @case poll begin
+            #SDLK_UP : 10
+            #SDLK_DOWN : 10
+            #default : 0.0
+        #end
+        #if walkbiasangle <= 1.0
+            #walkbiasangle = 359.0
+        #elseif walkbiasangle >= 359.0
+            #walkbiasangle = 0.0
+        #end
+        #walkbiasangle = sin(degrees2radians(walkbiasangle))/20.0
 
-        yrot += @case poll begin
-            SDLK_LEFT : 1.5
-            SDLK_RIGHT : -1.5
-            default : 0.0
-        end
-    end
-
+        #yrot += @case poll begin
+            #SDLK_LEFT : 1.5
+            #SDLK_RIGHT : -1.5
+            #default : 0.0
+        #end
+    #end
 end

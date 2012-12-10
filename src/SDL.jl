@@ -1,342 +1,346 @@
 #  Jasper den Ouden 02-08-2012
 # Placed in public domain.
 
+require("GLU")
+require("OpenGL")
+require("OpenGL/src/OpenGLAux")
 require("GetC")
+using GLU
+using OpenGL
+using OpenGLAux
 
 module SDL
 
 import GetC.@get_c_fun
-using  OpenGL
 
-export mouse_x,mouse_y, poll_event,flush_events
-
-export SDL_ID_FAILED, SDL_MOUSEMOTION, SDL_MOUSE_LEFT, 
-       SDL_MOUSE_RIGHT, SDL_MOUSE_MIDDLE
-
-#non-asci keys.
-export SDLK_PAUSE, SDLK_ESCAPE,
-       SDLK_KP0, SDLK_KP1, SDLK_KP2, SDLK_KP3, SDLK_KP4, SDLK_KP5, SDLK_KP6,
-       SDLK_KP7, SDLK_KP8, SDLK_KP9, 
-       SDLK_KP_PERIOD, SDLK_KP_DIVIDE, SDLK_KP_MINUS, SDLK_KP_PLUS, 
-       SDLK_KP_ENTER, SDLK_KP_EQUALS, 
-       SDLK_UP, SDLK_DOWN, SDLK_RIGHT, SDLK_LEFT,
-       SDLK_INSERT, SDLK_HOME, SDLK_END,
-       SDLK_PAGEUP, SDLK_PAGEDOWN, 
-       SDLK_F1, SDLK_F2, SDLK_F3, SDLK_F4, SDLK_F5, SDLK_F6, SDLK_F7, SDLK_F8,
-       SDLK_F9, SDLK_F10, SDLK_F11, SDLK_F12, SDLK_F13, SDLK_F14, SDLK_F15, 
-       SDLK_NUMLOCK, SDLK_CAPSLOCK, SDLK_SCROLLOCK, SDLK_RSHIFT, SDLK_LSHIFT,
-       SDLK_RCTRL, SDLK_LCTRL, SDLK_RALT, SDLK_LALT, SDLK_RMETA, SDLK_LMETA, 
-       SDLK_LSUPER, SDLK_RSUPER, SDLK_MODE, SDLK_HELP, SDLK_PRINT, 
-       SDLK_SYSREQ, SDLK_BREAK, SDLK_MENU, SDLK_POWER, SDLK_EURO, SDL_QUIT, 
-       SDL_VIDEORESIZE, SDL_VIDEOEXPOSE, SDL_SYSWMEVENT, SDL_EVENTS_DONE
-
-export sdl_free_surface, IMG_Load, poll_event, mouse_x(), mouse_y()
+#TODO: read struct info from SDL_SetVideoMode into this composite type
+#type SDL_VideoInfo 
+	#hw_available::Uint32 #:1
+	#wm_available::Uint32 #:1
+	#UnusedBits1::Uint32  #:6
+	#UnusedBits2::Uint32  #:1
+	#blit_hw::Uint32      #:1
+	#blit_hw_CC::Uint32   #:1
+	#blit_hw_A::Uint32    #:1
+	#blit_sw::Uint32      #:1
+	#blit_sw_CC::Uint32   #:1
+	#blit_sw_A::Uint32    #:1
+	#blit_fill::Uint32    #:1
+	#UnusedBits3::Uint32  #:16
+	#video_mem::Uint32
+	#vfmt::Ptr{Void}
+	#current_w::Int32
+	#current_h::Int32
+#end
 
 sdl = dlopen("libSDL")
 
-abstract SDL
-
-type SDL_Rect <: SDL
-    x::Int16
-    y::Int16
-    w::Uint16
-    h::Uint16
-end
-
-type SDL_Color <: SDL
-    r::Uint8
-    g::Uint8
-    b::Uint8
-    unused::Uint8
-end
-
-type SDL_Palette <: SDL
-    ncolors::Int32
-    colors::SDL_Color
-end
-
-type SDL_PixelFormat <: SDL
-    palette::SDL_Palette
-    BitsPerPixel::Uint8
-    BytesPerPixel::Uint8
-    Rloss::Uint8
-    Gloss::Uint8
-    Bloss::Uint8
-    Aloss::Uint8
-    Rshift::Uint8
-    Gshift::Uint8
-    Bshift::Uint8
-    Ashift::Uint8
-    Rmask::Uint32
-    Gmask::Uint32
-    Bmask::Uint32
-    Amask::Uint32
-    colorkey::Uint32
-    alpha::Uint8
-end
-
-type private_hwdata <: SDL
-
-end
-
-type SDL_BlitMap <: SDL
-
-end
-
-type SDL_Surface <: SDL
-    flags::Uint32
-    format::SDL_PixelFormat
-    w::Int32
-    h::Int32
-    pitch::Uint16
-    pixels::Array(Uint8,w,h)
-    offset::Int32
-    hwdata::private_hwdata
-    clip_rect::SDL_Rect
-    unused1::Uint32
-    locked::Uint32
-    map::SDL_BlitMap
-    format_version::Uint32
-    refcount::Int32
-end
-
-typedef struct SDL_ActiveEvent {
-	Uint8 type;	/**< SDL_ACTIVEEVENT */
-	Uint8 gain;	/**< Whether given states were gained or lost (1/0) */
-	Uint8 state;	/**< A mask of the focus states */
-} SDL_ActiveEvent;
-
-/** Keyboard event structure */
-typedef struct SDL_KeyboardEvent {
-	Uint8 type;	/**< SDL_KEYDOWN or SDL_KEYUP */
-	Uint8 which;	/**< The keyboard device index */
-	Uint8 state;	/**< SDL_PRESSED or SDL_RELEASED */
-	SDL_keysym keysym;
-} SDL_KeyboardEvent;
-
-/** Mouse motion event structure */
-typedef struct SDL_MouseMotionEvent {
-	Uint8 type;	/**< SDL_MOUSEMOTION */
-	Uint8 which;	/**< The mouse device index */
-	Uint8 state;	/**< The current button state */
-	Uint16 x, y;	/**< The X/Y coordinates of the mouse */
-	Sint16 xrel;	/**< The relative motion in the X direction */
-	Sint16 yrel;	/**< The relative motion in the Y direction */
-} SDL_MouseMotionEvent;
-
-/** Mouse button event structure */
-typedef struct SDL_MouseButtonEvent {
-	Uint8 type;	/**< SDL_MOUSEBUTTONDOWN or SDL_MOUSEBUTTONUP */
-	Uint8 which;	/**< The mouse device index */
-	Uint8 button;	/**< The mouse button index */
-	Uint8 state;	/**< SDL_PRESSED or SDL_RELEASED */
-	Uint16 x, y;	/**< The X/Y coordinates of the mouse at press time */
-} SDL_MouseButtonEvent;
-
-/** Joystick axis motion event structure */
-typedef struct SDL_JoyAxisEvent {
-	Uint8 type;	/**< SDL_JOYAXISMOTION */
-	Uint8 which;	/**< The joystick device index */
-	Uint8 axis;	/**< The joystick axis index */
-	Sint16 value;	/**< The axis value (range: -32768 to 32767) */
-} SDL_JoyAxisEvent;
-
-/** Joystick trackball motion event structure */
-typedef struct SDL_JoyBallEvent {
-	Uint8 type;	/**< SDL_JOYBALLMOTION */
-	Uint8 which;	/**< The joystick device index */
-	Uint8 ball;	/**< The joystick trackball index */
-	Sint16 xrel;	/**< The relative motion in the X direction */
-	Sint16 yrel;	/**< The relative motion in the Y direction */
-} SDL_JoyBallEvent;
-
-/** Joystick hat position change event structure */
-typedef struct SDL_JoyHatEvent {
-	Uint8 type;	/**< SDL_JOYHATMOTION */
-	Uint8 which;	/**< The joystick device index */
-	Uint8 hat;	/**< The joystick hat index */
-	Uint8 value;	/**< The hat position value:
-			 *   SDL_HAT_LEFTUP   SDL_HAT_UP       SDL_HAT_RIGHTUP
-			 *   SDL_HAT_LEFT     SDL_HAT_CENTERED SDL_HAT_RIGHT
-			 *   SDL_HAT_LEFTDOWN SDL_HAT_DOWN     SDL_HAT_RIGHTDOWN
-			 *  Note that zero means the POV is centered.
-			 */
-} SDL_JoyHatEvent;
-
-/** Joystick button event structure */
-typedef struct SDL_JoyButtonEvent {
-	Uint8 type;	/**< SDL_JOYBUTTONDOWN or SDL_JOYBUTTONUP */
-	Uint8 which;	/**< The joystick device index */
-	Uint8 button;	/**< The joystick button index */
-	Uint8 state;	/**< SDL_PRESSED or SDL_RELEASED */
-} SDL_JoyButtonEvent;
-
-/** The "window resized" event
- *  When you get this event, you are responsible for setting a new video
- *  mode with the new width and height.
- */
-typedef struct SDL_ResizeEvent {
-	Uint8 type;	/**< SDL_VIDEORESIZE */
-	int w;		/**< New width */
-	int h;		/**< New height */
-} SDL_ResizeEvent;
-
-/** The "screen redraw" event */
-typedef struct SDL_ExposeEvent {
-	Uint8 type;	/**< SDL_VIDEOEXPOSE */
-} SDL_ExposeEvent;
-
-/** The "quit requested" event */
-typedef struct SDL_QuitEvent {
-	Uint8 type;	/**< SDL_QUIT */
-} SDL_QuitEvent;
-
-type SDL_UserEvent <: SDL
-	etype::Uint8	/**< SDL_USEREVENT through SDL_NUMEVENTS-1 */
-	code::Uint32	/**< User defined event code */
-	data1::Ptr	/**< User defined data pointer */
-	data2::Ptr	/**< User defined data pointer */
-end
-
-type SDL_SysWMEvent <: SDL
-	etype::Uint8
-	msg::SDL_SysWMmsg
-end
-
-type SDL_Event <: SDL
-    etype::Uint8
-    active::SDL_ActiveEvent
-    key::SDL_KeyboardEvent
-    motion::SDL_MouseMotionEvent
-    button::SDL_MouseButtonEvent
-    jaxis::SDL_JoyAxisEvent
-    jball::SDL_JoyBallEvent
-    jhat::SDL_JoyHatEvent
-    jbutton::SDL_JoyButtonEvent
-    resize::SDL_ResizeEvent
-    expose::SDL_ExposeEvent
-    quit::SDL_QuitEvent
-    user::SDL_UserEvent
-    syswm::SDL_SysWMEvent
-end
-
-@get_c_fun sdl sdl_free_surface SDL_FreeSurface(ptr::Ptr)::Void
+@get_c_fun sdl sdl_freesurface SDL_FreeSurface(ptr::Ptr{Void})::Void
+export sdl_freesurface
 @get_c_fun sdl sdl_gl_swapbuffers SDL_GL_SwapBuffers()::Void
-@get_c_fun sdl sdl_init SDL_Init()::Int32
-@get_c_fun sdl sdl_setvideomode SDL_SetVideoMode(width::Int32,height::Int32,bpp::Int32,flags::Uint32)::SDL_Surface
+export sdl_gl_swapbuffers
+@get_c_fun sdl sdl_init SDL_Init(flags::Uint32)::Int32
+export sdl_init
+@get_c_fun sdl sdl_setvideomode SDL_SetVideoMode(width::Int32,height::Int32,bpp::Int32,flags::Uint32)::Ptr{Void}
+export sdl_setvideomode
+@get_c_fun sdl sdl_getvideoinfo SDL_GetVideoInfo()::Ptr{Void}
+export sdl_getvideoinfo
 @get_c_fun sdl sdl_wm_setcaption SDL_WM_SetCaption(title::Ptr{Uint8},icon::Ptr{Uint8})::Int32
-@get_c_fun sdl sdl_pollevent SDL_PollEvent(event::SDL_Event)::Int32
+export sdl_wm_setcaption
+@get_c_fun sdl sdl_gl_setattribute SDL_GL_SetAttribute(attr::Uint32,value::Int32)::Void
+export sdl_gl_setattribute
 
-sdl_img = dlopen("libSDL_image")
+#TODO: read up on the event system in SDL
+#type SDL_Event_Ptr
+    #ptr::Ptr{Void}
+#end
 
-function IMG_Load(file::String)
-  return ccall(dlsym(sdl_img_lib, :IMG_Load), Ptr,(Ptr{Uint8},), bytestring(file))
-end
+#function sdl_pollevent(Event::SDL_Event)
+    #ccall(dlsym(sdl, :SDL_PollEvent), Int32, (Ptr{Void},) Event.ptr)
+#end
+#export sdl_pollevent
 
-function flush_events(quit_exit_p::Bool)
-    while true
-        pol = poll_event()
-        if pol == SDL_EVENTS_DONE
-            return
-        end
-        if pol == SDL_QUIT && quit_exit_p
-            exit()
-        end
-    end
-end
-flush_events() = flush_events(true)
-
-const SDL_SWSURFACE     = 0x00000000
-const SDL_HWSURFACE     = 0x00000001
-const SDL_ASYNCBLIT     = 0x00000004
-const SDL_ANYFORMAT     = 0x10000000
-const SDL_HWPALETTE     = 0x20000000
-const SDL_DOUBLEBUF     = 0x40000000
-const SDL_FULLSCREEN    = 0x80000000
-const SDL_OPENGL        = 0x00000002
-const SDL_OPENGLBLIT    = 0x0000000A
-const SDL_RESIZABLE     = 0x00000010
-const SDL_NOFRAME       = 0x00000020
-const SDL_HWACCEL       = 0x00000100
-const SDL_SRCCOLORKEY   = 0x00001000
-const SDL_RLEACCELOK    = 0x00002000
-const SDL_RLEACCEL      = 0x00004000
-const SDL_SRCALPHA      = 0x00010000
-const SDL_PREALLOC      = 0x01000000
-const SDL_ID_FAILED     = 1024
-const SDL_MOUSEMOTION   = 1028
-const SDL_BUTTON_LEFT   = 1025
-const SDL_BUTTON_RIGHT  = 1026
-const SDL_BUTTON_MIDDLE = 1027
-const SDLK_PAUSE        = 1029
-const SDLK_ESCAPE       = 1040
-const SDLK_KP0          = 1030
-const SDLK_KP1          = 1031
-const SDLK_KP2          = 1032
-const SDLK_KP3          = 1033
-const SDLK_KP4          = 1034
-const SDLK_KP5          = 1035
-const SDLK_KP6          = 1036
-const SDLK_KP7          = 1037
-const SDLK_KP8          = 1038;
-const SDLK_KP9          = 1039
-const SDLK_KP_PERIOD    = 1041
-const SDLK_KP_DIVIDE    = 1042
-const SDLK_KP_MINUS     = 1043
-const SDLK_KP_PLUS      = 1044;
-const SDLK_KP_ENTER     = 1045
-const SDLK_KP_EQUALS    = 1046
-const SDLK_UP           = 1047
-const SDLK_DOWN         = 1048
-const SDLK_RIGHT        = 1049
-const SDLK_LEFT         = 1050
-const SDLK_INSERT       = 1051
-const SDLK_HOME         = 1052
-const SDLK_END          = 1053
-const SDLK_PAGEUP       = 1054
-const SDLK_PAGEDOWN     = 1055
-const SDLK_F1           = 1056
-const SDLK_F2           = 1057
-const SDLK_F3           = 1058
-const SDLK_F4           = 1059
-const SDLK_F5           = 1060
-const SDLK_F6           = 1061
-const SDLK_F7           = 1062
-const SDLK_F8           = 1063
-const SDLK_F9           = 1064
-const SDLK_F10          = 1065
-const SDLK_F11          = 1066
-const SDLK_F12          = 1067
-const SDLK_F13          = 1068
-const SDLK_F14          = 1069
-const SDLK_F15          = 1070
-const SDLK_NUMLOCK      = 1071
-const SDLK_CAPSLOCK     = 1072
-const SDLK_SCROLLOCK    = 1073
-const SDLK_RSHIFT       = 1074
-const SDLK_LSHIFT       = 1075
-const SDLK_RCTRL        = 1076
-const SDLK_LCTRL        = 1077
-const SDLK_RALT         = 1078
-const SDLK_LALT         = 1079
-const SDLK_RMETA        = 1080
-const SDLK_LMETA        = 1081
-const SDLK_LSUPER       = 1082
-const SDLK_RSUPER       = 1083
-const SDLK_MODE         = 1084
-const SDLK_HELP         = 1085
-const SDLK_PRINT        = 1086
-const SDLK_SYSREQ       = 1087
-const SDLK_BREAK        = 1088
-const SDLK_MENU         = 1089
-const SDLK_POWER        = 1090
-const SDLK_EURO         = 1091
-const SDL_QUIT          = 1100
-const SDL_VIDEORESIZE   = 1101
-const SDL_VIDEOEXPOSE   = 1102
-const SDL_SYSWMEVENT    = 1103
-const SDL_EVENTS_DONE   = 0
-
+const SDL_INIT_VIDEO      = 0x00000020
+const SDL_SWSURFACE       = 0x00000000
+const SDL_HWSURFACE       = 0x00000001
+const SDL_ASYNCBLIT       = 0x00000004
+const SDL_ANYFORMAT       = 0x10000000
+const SDL_HWPALETTE       = 0x20000000
+const SDL_DOUBLEBUF       = 0x40000000
+const SDL_FULLSCREEN      = 0x80000000
+const SDL_OPENGL          = 0x00000002
+const SDL_OPENGLBLIT      = 0x0000000A
+const SDL_RESIZABLE       = 0x00000010
+const SDL_NOFRAME         = 0x00000020
+const SDL_HWACCEL         = 0x00000100
+const SDL_SRCCOLORKEY     = 0x00001000
+const SDL_RLEACCELOK      = 0x00002000
+const SDL_RLEACCEL        = 0x00004000
+const SDL_SRCALPHA        = 0x00010000
+const SDL_PREALLOC        = 0x01000000
+const SDL_NOEVENT         = 0
+const SDL_ACTIVEEVENT     = 1
+const SDL_KEYDOWN         = 2
+const SDL_KEYUP           = 3
+const SDL_MOUSEMOTION     = 4
+const SDL_MOUSEBUTTONDOWN = 5
+const SDL_MOUSEBUTTONUP   = 6
+const SDL_JOYAXISMOTION   = 7
+const SDL_JOYBALLMOTION   = 8
+const SDL_JOYHATMOTION    = 9
+const SDL_JOYBUTTONDOWN   = 10
+const SDL_JOYBUTTONUP     = 11
+const SDL_QUIT            = 12
+const SDL_SYSWMEVENT      = 13
+const SDL_EVENT_RESERVEDA = 14
+const SDL_EVENT_RESERVEDB = 15
+const SDL_VIDEORESIZE     = 16
+const SDL_VIDEOEXPOSE     = 17
+const SDL_EVENT_RESERVED2 = 18
+const SDL_EVENT_RESERVED3 = 19
+const SDL_EVENT_RESERVED4 = 20
+const SDL_EVENT_RESERVED5 = 21
+const SDL_EVENT_RESERVED6 = 22
+const SDL_EVENT_RESERVED7 = 23
+const SDL_USEREVENT       = 24
+const SDL_NUMEVENTS       = 32
+const SDL_BUTTON_LEFT     = 1
+const SDL_BUTTON_MIDDLE   = 2
+const SDL_BUTTON_RIGHT    = 3
+const SDLK_UNKNOWN        = 0
+const SDLK_FIRST          = 0
+const SDLK_BACKSPACE      = 8
+const SDLK_TAB            = 9
+const SDLK_CLEAR          = 12
+const SDLK_RETURN         = 13
+const SDLK_PAUSE          = 19
+const SDLK_ESCAPE         = 27
+const SDLK_SPACE          = 32
+const SDLK_EXCLAIM        = 33
+const SDLK_QUOTEDBL       = 34
+const SDLK_HASH           = 35
+const SDLK_DOLLAR         = 36
+const SDLK_AMPERSAND      = 38
+const SDLK_QUOTE          = 39
+const SDLK_LEFTPAREN      = 40
+const SDLK_RIGHTPAREN     = 41
+const SDLK_ASTERISK       = 42
+const SDLK_PLUS           = 43
+const SDLK_COMMA          = 44
+const SDLK_MINUS          = 45
+const SDLK_PERIOD         = 46
+const SDLK_SLASH          = 47
+const SDLK_0              = 48
+const SDLK_1              = 49
+const SDLK_2              = 50
+const SDLK_3              = 51
+const SDLK_4              = 52
+const SDLK_5              = 53
+const SDLK_6              = 54
+const SDLK_7              = 55
+const SDLK_8              = 56
+const SDLK_9              = 57
+const SDLK_COLON          = 58
+const SDLK_SEMICOLON      = 59
+const SDLK_LESS           = 60
+const SDLK_EQUALS         = 61
+const SDLK_GREATER        = 62
+const SDLK_QUESTION       = 63
+const SDLK_AT             = 64
+const SDLK_LEFTBRACKET    = 91
+const SDLK_BACKSLASH      = 92
+const SDLK_RIGHTBRACKET   = 93
+const SDLK_CARET          = 94
+const SDLK_UNDERSCORE     = 95
+const SDLK_BACKQUOTE      = 96
+const SDLK_a              = 97
+const SDLK_b              = 98
+const SDLK_c              = 99
+const SDLK_d              = 100
+const SDLK_e              = 101
+const SDLK_f              = 102
+const SDLK_g              = 103
+const SDLK_h              = 104
+const SDLK_i              = 105
+const SDLK_j              = 106
+const SDLK_k              = 107
+const SDLK_l              = 108
+const SDLK_m              = 109
+const SDLK_n              = 110
+const SDLK_o              = 111
+const SDLK_p              = 112
+const SDLK_q              = 113
+const SDLK_r              = 114
+const SDLK_s              = 115
+const SDLK_t              = 116
+const SDLK_u              = 117
+const SDLK_v              = 118
+const SDLK_w              = 119
+const SDLK_x              = 120
+const SDLK_y              = 121
+const SDLK_z              = 122
+const SDLK_DELETE         = 127
+const SDLK_WORLD_0        = 160
+const SDLK_WORLD_1        = 161
+const SDLK_WORLD_2        = 162
+const SDLK_WORLD_3        = 163
+const SDLK_WORLD_4        = 164
+const SDLK_WORLD_5        = 165
+const SDLK_WORLD_6        = 166
+const SDLK_WORLD_7        = 167
+const SDLK_WORLD_8        = 168
+const SDLK_WORLD_9        = 169
+const SDLK_WORLD_10       = 170
+const SDLK_WORLD_11       = 171
+const SDLK_WORLD_12       = 172
+const SDLK_WORLD_13       = 173
+const SDLK_WORLD_14       = 174
+const SDLK_WORLD_15       = 175
+const SDLK_WORLD_16       = 176
+const SDLK_WORLD_17       = 177
+const SDLK_WORLD_18       = 178
+const SDLK_WORLD_19       = 179
+const SDLK_WORLD_20       = 180
+const SDLK_WORLD_21       = 181
+const SDLK_WORLD_22       = 182
+const SDLK_WORLD_23       = 183
+const SDLK_WORLD_24       = 184
+const SDLK_WORLD_25       = 185
+const SDLK_WORLD_26       = 186
+const SDLK_WORLD_27       = 187
+const SDLK_WORLD_28       = 188
+const SDLK_WORLD_29       = 189
+const SDLK_WORLD_30       = 190
+const SDLK_WORLD_31       = 191
+const SDLK_WORLD_32       = 192
+const SDLK_WORLD_33       = 193
+const SDLK_WORLD_34       = 194
+const SDLK_WORLD_35       = 195
+const SDLK_WORLD_36       = 196
+const SDLK_WORLD_37       = 197
+const SDLK_WORLD_38       = 198
+const SDLK_WORLD_39       = 199
+const SDLK_WORLD_40       = 200
+const SDLK_WORLD_41       = 201
+const SDLK_WORLD_42       = 202
+const SDLK_WORLD_43       = 203
+const SDLK_WORLD_44       = 204
+const SDLK_WORLD_45       = 205
+const SDLK_WORLD_46       = 206
+const SDLK_WORLD_47       = 207
+const SDLK_WORLD_48       = 208
+const SDLK_WORLD_49       = 209
+const SDLK_WORLD_50       = 210
+const SDLK_WORLD_51       = 211
+const SDLK_WORLD_52       = 212
+const SDLK_WORLD_53       = 213
+const SDLK_WORLD_54       = 214
+const SDLK_WORLD_55       = 215
+const SDLK_WORLD_56       = 216
+const SDLK_WORLD_57       = 217
+const SDLK_WORLD_58       = 218
+const SDLK_WORLD_59       = 219
+const SDLK_WORLD_60       = 220
+const SDLK_WORLD_61       = 221
+const SDLK_WORLD_62       = 222
+const SDLK_WORLD_63       = 223
+const SDLK_WORLD_64       = 224
+const SDLK_WORLD_65       = 225
+const SDLK_WORLD_66       = 226
+const SDLK_WORLD_67       = 227
+const SDLK_WORLD_68       = 228
+const SDLK_WORLD_69       = 229
+const SDLK_WORLD_70       = 230
+const SDLK_WORLD_71       = 231
+const SDLK_WORLD_72       = 232
+const SDLK_WORLD_73       = 233
+const SDLK_WORLD_74       = 234
+const SDLK_WORLD_75       = 235
+const SDLK_WORLD_76       = 236
+const SDLK_WORLD_77       = 237
+const SDLK_WORLD_78       = 238
+const SDLK_WORLD_79       = 239
+const SDLK_WORLD_80       = 240
+const SDLK_WORLD_81       = 241
+const SDLK_WORLD_82       = 242
+const SDLK_WORLD_83       = 243
+const SDLK_WORLD_84       = 244
+const SDLK_WORLD_85       = 245
+const SDLK_WORLD_86       = 246
+const SDLK_WORLD_87       = 247
+const SDLK_WORLD_88       = 248
+const SDLK_WORLD_89       = 249
+const SDLK_WORLD_90       = 250
+const SDLK_WORLD_91       = 251
+const SDLK_WORLD_92       = 252
+const SDLK_WORLD_93       = 253
+const SDLK_WORLD_94       = 254
+const SDLK_WORLD_95       = 255
+const SDLK_KP0            = 256
+const SDLK_KP1            = 257
+const SDLK_KP2            = 258
+const SDLK_KP3            = 259
+const SDLK_KP4            = 260
+const SDLK_KP5            = 261
+const SDLK_KP6            = 262
+const SDLK_KP7            = 263
+const SDLK_KP8            = 264
+const SDLK_KP9            = 265
+const SDLK_KP_PERIOD      = 266
+const SDLK_KP_DIVIDE      = 267
+const SDLK_KP_MULTIPLY    = 268
+const SDLK_KP_MINUS       = 269
+const SDLK_KP_PLUS        = 270
+const SDLK_KP_ENTER       = 271
+const SDLK_KP_EQUALS      = 272
+const SDLK_UP             = 273
+const SDLK_DOWN           = 274
+const SDLK_RIGHT          = 275
+const SDLK_LEFT           = 276
+const SDLK_INSERT         = 277
+const SDLK_HOME           = 278
+const SDLK_END            = 279
+const SDLK_PAGEUP         = 280
+const SDLK_PAGEDOWN       = 281
+const SDLK_F1             = 282
+const SDLK_F2             = 283
+const SDLK_F3             = 284
+const SDLK_F4             = 285
+const SDLK_F5             = 286
+const SDLK_F6             = 287
+const SDLK_F7             = 288
+const SDLK_F8             = 289
+const SDLK_F9             = 290
+const SDLK_F10            = 291
+const SDLK_F11            = 292
+const SDLK_F12            = 293
+const SDLK_F13            = 294
+const SDLK_F14            = 295
+const SDLK_F15            = 296
+const SDLK_NUMLOCK        = 300
+const SDLK_CAPSLOCK       = 301
+const SDLK_SCROLLOCK      = 302
+const SDLK_RSHIFT         = 303
+const SDLK_LSHIFT         = 304
+const SDLK_RCTRL          = 305
+const SDLK_LCTRL          = 306
+const SDLK_RALT           = 307
+const SDLK_LALT           = 308
+const SDLK_RMETA          = 309
+const SDLK_LMETA          = 310
+const SDLK_LSUPER         = 311
+const SDLK_RSUPER         = 312
+const SDLK_MODE           = 313
+const SDLK_COMPOSE        = 315
+const SDLK_HELP           = 315
+const SDLK_PRINT          = 316
+const SDLK_SYSREQ         = 317
+const SDLK_BREAK          = 318
+const SDLK_MENU           = 319
+const SDLK_POWER          = 320
+const SDLK_EURO           = 321
+const SDLK_UNDO           = 322
+export SDL_INIT_VIDEO
 export SDL_SWSURFACE  
 export SDL_HWSURFACE  
 export SDL_ASYNCBLIT  
@@ -354,5 +358,267 @@ export SDL_RLEACCELOK
 export SDL_RLEACCEL   
 export SDL_SRCALPHA   
 export SDL_PREALLOC   
+export SDL_NOEVENT         
+export SDL_ACTIVEEVENT     
+export SDL_KEYDOWN         
+export SDL_KEYUP           
+export SDL_MOUSEMOTION     
+export SDL_MOUSEBUTTONDOWN 
+export SDL_MOUSEBUTTONUP   
+export SDL_JOYAXISMOTION   
+export SDL_JOYBALLMOTION   
+export SDL_JOYHATMOTION    
+export SDL_JOYBUTTONDOWN   
+export SDL_JOYBUTTONUP     
+export SDL_QUIT            
+export SDL_SYSWMEVENT      
+export SDL_EVENT_RESERVEDA 
+export SDL_EVENT_RESERVEDB 
+export SDL_VIDEORESIZE     
+export SDL_VIDEOEXPOSE     
+export SDL_EVENT_RESERVED2 
+export SDL_EVENT_RESERVED3 
+export SDL_EVENT_RESERVED4 
+export SDL_EVENT_RESERVED5 
+export SDL_EVENT_RESERVED6 
+export SDL_EVENT_RESERVED7 
+export SDL_USEREVENT       
+export SDL_NUMEVENTS       
+export SDL_BUTTON_LEFT  
+export SDL_BUTTON_RIGHT 
+export SDL_BUTTON_MIDDLE
+export SDLK_UNKNOWN      
+export SDLK_FIRST        
+export SDLK_BACKSPACE    
+export SDLK_TAB          
+export SDLK_CLEAR        
+export SDLK_RETURN       
+export SDLK_PAUSE        
+export SDLK_ESCAPE       
+export SDLK_SPACE        
+export SDLK_EXCLAIM      
+export SDLK_QUOTEDBL     
+export SDLK_HASH         
+export SDLK_DOLLAR       
+export SDLK_AMPERSAND    
+export SDLK_QUOTE        
+export SDLK_LEFTPAREN    
+export SDLK_RIGHTPAREN   
+export SDLK_ASTERISK     
+export SDLK_PLUS         
+export SDLK_COMMA        
+export SDLK_MINUS        
+export SDLK_PERIOD       
+export SDLK_SLASH        
+export SDLK_0            
+export SDLK_1            
+export SDLK_2            
+export SDLK_3            
+export SDLK_4            
+export SDLK_5            
+export SDLK_6            
+export SDLK_7            
+export SDLK_8            
+export SDLK_9            
+export SDLK_COLON        
+export SDLK_SEMICOLON    
+export SDLK_LESS         
+export SDLK_EQUALS       
+export SDLK_GREATER      
+export SDLK_QUESTION     
+export SDLK_AT           
+export SDLK_LEFTBRACKET  
+export SDLK_BACKSLASH    
+export SDLK_RIGHTBRACKET 
+export SDLK_CARET        
+export SDLK_UNDERSCORE   
+export SDLK_BACKQUOTE    
+export SDLK_a            
+export SDLK_b            
+export SDLK_c            
+export SDLK_d           
+export SDLK_e           
+export SDLK_f           
+export SDLK_g           
+export SDLK_h           
+export SDLK_i           
+export SDLK_j           
+export SDLK_k           
+export SDLK_l           
+export SDLK_m           
+export SDLK_n           
+export SDLK_o           
+export SDLK_p           
+export SDLK_q           
+export SDLK_r           
+export SDLK_s           
+export SDLK_t           
+export SDLK_u           
+export SDLK_v           
+export SDLK_w           
+export SDLK_x           
+export SDLK_y           
+export SDLK_z           
+export SDLK_DELETE      
+export SDLK_WORLD_0     
+export SDLK_WORLD_1     
+export SDLK_WORLD_2     
+export SDLK_WORLD_3     
+export SDLK_WORLD_4     
+export SDLK_WORLD_5     
+export SDLK_WORLD_6     
+export SDLK_WORLD_7     
+export SDLK_WORLD_8     
+export SDLK_WORLD_9     
+export SDLK_WORLD_10    
+export SDLK_WORLD_11    
+export SDLK_WORLD_12    
+export SDLK_WORLD_13    
+export SDLK_WORLD_14    
+export SDLK_WORLD_15    
+export SDLK_WORLD_16    
+export SDLK_WORLD_17    
+export SDLK_WORLD_18    
+export SDLK_WORLD_19    
+export SDLK_WORLD_20    
+export SDLK_WORLD_21    
+export SDLK_WORLD_22    
+export SDLK_WORLD_23    
+export SDLK_WORLD_24    
+export SDLK_WORLD_25    
+export SDLK_WORLD_26    
+export SDLK_WORLD_27    
+export SDLK_WORLD_28    
+export SDLK_WORLD_29    
+export SDLK_WORLD_30    
+export SDLK_WORLD_31    
+export SDLK_WORLD_32    
+export SDLK_WORLD_33    
+export SDLK_WORLD_34    
+export SDLK_WORLD_35    
+export SDLK_WORLD_36    
+export SDLK_WORLD_37    
+export SDLK_WORLD_38    
+export SDLK_WORLD_39    
+export SDLK_WORLD_40    
+export SDLK_WORLD_41    
+export SDLK_WORLD_42    
+export SDLK_WORLD_43    
+export SDLK_WORLD_44    
+export SDLK_WORLD_45    
+export SDLK_WORLD_46    
+export SDLK_WORLD_47    
+export SDLK_WORLD_48    
+export SDLK_WORLD_49    
+export SDLK_WORLD_50    
+export SDLK_WORLD_51    
+export SDLK_WORLD_52    
+export SDLK_WORLD_53    
+export SDLK_WORLD_54    
+export SDLK_WORLD_55    
+export SDLK_WORLD_56    
+export SDLK_WORLD_57    
+export SDLK_WORLD_58    
+export SDLK_WORLD_59    
+export SDLK_WORLD_60    
+export SDLK_WORLD_61    
+export SDLK_WORLD_62    
+export SDLK_WORLD_63    
+export SDLK_WORLD_64    
+export SDLK_WORLD_65    
+export SDLK_WORLD_66    
+export SDLK_WORLD_67    
+export SDLK_WORLD_68    
+export SDLK_WORLD_69    
+export SDLK_WORLD_70    
+export SDLK_WORLD_71    
+export SDLK_WORLD_72    
+export SDLK_WORLD_73    
+export SDLK_WORLD_74    
+export SDLK_WORLD_75    
+export SDLK_WORLD_76    
+export SDLK_WORLD_77    
+export SDLK_WORLD_78    
+export SDLK_WORLD_79    
+export SDLK_WORLD_80    
+export SDLK_WORLD_81    
+export SDLK_WORLD_82    
+export SDLK_WORLD_83    
+export SDLK_WORLD_84    
+export SDLK_WORLD_85    
+export SDLK_WORLD_86    
+export SDLK_WORLD_87    
+export SDLK_WORLD_88    
+export SDLK_WORLD_89    
+export SDLK_WORLD_90    
+export SDLK_WORLD_91    
+export SDLK_WORLD_92    
+export SDLK_WORLD_93    
+export SDLK_WORLD_94    
+export SDLK_WORLD_95    
+export SDLK_KP0         
+export SDLK_KP1         
+export SDLK_KP2         
+export SDLK_KP3         
+export SDLK_KP4         
+export SDLK_KP5         
+export SDLK_KP6         
+export SDLK_KP7         
+export SDLK_KP8         
+export SDLK_KP9         
+export SDLK_KP_PERIOD   
+export SDLK_KP_DIVIDE   
+export SDLK_KP_MULTIPLY 
+export SDLK_KP_MINUS    
+export SDLK_KP_PLUS     
+export SDLK_KP_ENTER    
+export SDLK_KP_EQUALS   
+export SDLK_UP          
+export SDLK_DOWN        
+export SDLK_RIGHT       
+export SDLK_LEFT        
+export SDLK_INSERT      
+export SDLK_HOME        
+export SDLK_END         
+export SDLK_PAGEUP      
+export SDLK_PAGEDOWN    
+export SDLK_F1          
+export SDLK_F2          
+export SDLK_F3          
+export SDLK_F4          
+export SDLK_F5          
+export SDLK_F6          
+export SDLK_F7          
+export SDLK_F8          
+export SDLK_F9          
+export SDLK_F10         
+export SDLK_F11         
+export SDLK_F12         
+export SDLK_F13         
+export SDLK_F14         
+export SDLK_F15         
+export SDLK_NUMLOCK     
+export SDLK_CAPSLOCK    
+export SDLK_SCROLLOCK   
+export SDLK_RSHIFT      
+export SDLK_LSHIFT      
+export SDLK_RCTRL       
+export SDLK_LCTRL       
+export SDLK_RALT        
+export SDLK_LALT        
+export SDLK_RMETA       
+export SDLK_LMETA       
+export SDLK_LSUPER      
+export SDLK_RSUPER      
+export SDLK_MODE        
+export SDLK_COMPOSE     
+export SDLK_HELP        
+export SDLK_PRINT       
+export SDLK_SYSREQ      
+export SDLK_BREAK       
+export SDLK_MENU        
+export SDLK_POWER       
+export SDLK_EURO        
+export SDLK_UNDO        
 
-end #module SDL
+end

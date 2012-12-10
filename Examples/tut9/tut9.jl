@@ -5,14 +5,55 @@
 
 # load necessary GL/SDL routines
 
-load("initGL.jl")
-initGL()
+load("image")
+
+require("SDL")
+using SDL
+
+# initialize variables
+
+bpp       = 16
+wintitle  = "NeHe Tut 9"
+icontitle = "NeHe Tut 9"
+width     = 640
+height    = 480
+
+# open SDL window with an OpenGL context
+
+sdl_init(SDL_INIT_VIDEO)
+#videoInfo = sdl_getvideoinfo()
+videoFlags = (SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE | SDL_RESIZABLE)
+#if videoInfo.hw_available
+    videoFlags = (videoFlags | SDL_HWSURFACE)
+#else
+    #videoFlags = (videoFlags | SDL_SWSURFACE)
+#end
+#if videoInfo.blit_hw
+    videoFlags = (videoFlags | SDL_HWACCEL)
+#end
+sdl_gl_setattribute(SDL_GL_DOUBLEBUFFER, 1)
+sdl_setvideomode(width, height, bpp, videoFlags)
+sdl_wm_setcaption(wintitle, icontitle)
+
+glviewport(0, 0, width, height)
+glclearcolor(0.0, 0.0, 0.0, 0.0)
+glcleardepth(1.0)			 
+gldepthfunc(GL_LESS)	 
+glenable(GL_DEPTH_TEST)
+glshademodel(GL_SMOOTH)
+
+glmatrixmode(GL_PROJECTION)
+glloadidentity()
+
+gluperspective(45.0,width/height,0.1,100.0)
+
+glmatrixmode(GL_MODELVIEW)
 
 # initialize variables
 
 const STAR_NUM      = 50
 const max_star_dist = 0.3
-const star_size     = 0.1
+const star_size     = 1.0
 
 type star
     r::Int  
@@ -38,25 +79,34 @@ for loop = 1:STAR_NUM-1
 end # I haven't found a better way to make an array of composite types
 
 tilt    = 90.0
-zoom    = 0.8
+zoom    = -15.0
 spin    = 0.0
 
 twinkle = false
 
 # load textures from images
 
-tex1 = SDLIMGLoad("Star.bmp")
+tex = Array(Uint8,1) # generating 1 texture
+img = imread("Star.bmp")
+glgentextures(1,tex)
+glbindtexture(GL_TEXTURE_2D,tex[1])
+gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+glteximage2d(GL_TEXTURE_2D, 0, 3, size(img,1), size(img,2), 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 
 # enable texture mapping and alpha blending
 
 glblendfunc(GL_SRC_ALPHA, GL_ONE)
-glenable({GL_TEXTURE_2D, GL_BLEND})
+glenable(GL_TEXTURE_2D)
+glenable(GL_BLEND)
 
 # drawing routines
 
 while true
+    glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glloadidentity()
 
-    glbindtexture(GL_TEXTURE_2D,tex1)
+    glbindtexture(GL_TEXTURE_2D,tex[1])
 
     for loop = 1:STAR_NUM
 
@@ -76,14 +126,14 @@ while true
 
             glcolor4ub(stars[STAR_NUM - loop + 1].r,stars[STAR_NUM - loop + 1].g,stars[STAR_NUM - loop + 1].b,255)
 
-            @with glprimitive(GL_QUADS) begin
+            glbegin(GL_QUADS)
                 gltexcoord(0.0, 0.0)
                 glvertex(-star_size, -star_size, 0.0)
                 gltexcoord(1.0, 0.0)
                 glvertex(star_size, -star_size, 0.0)
                 gltexcoord(1.0, 1.0)
                 glvertex(star_size, star_size, 0.0)
-            end
+            glend()
 
         end
 
@@ -92,7 +142,7 @@ while true
         glrotate(spin, 0.0, 0.0, 1.0)
         glcolor4ub(stars[loop].r, stars[loop].g, stars[loop].b, 255)
 
-        @with glprimitive(GL_QUADS) begin
+        glbegin(GL_QUADS)
             gltexcoord(0.0, 0.0)
             glvertex(-star_size, -star_size, 0.0)
             gltexcoord(1.0, 0.0)
@@ -101,7 +151,7 @@ while true
             glvertex(star_size, star_size, 0.0)
             gltexcoord(0.0, 1.0)
             glvertex(-star_size, star_size, 0.0)
-        end
+        glend()
 
         spin              += 0.01
         stars[loop].angle += loop * 1.0/STAR_NUM * 1.0
@@ -116,34 +166,33 @@ while true
 
     end
 
-    SwapAndClear()
+    sdl_gl_swapbuffers()
 
     # check key presses
-    while true
-        poll = poll_event()
-        @case poll begin
-            int('q') : return
-            SDL_EVENTS_DONE   : break
-        end
+    #while true
+        #poll = poll_event()
+        #@case poll begin
+            #int('q') : return
+            #SDL_EVENTS_DONE   : break
+        #end
 
-        println("Twinkle was: $twinkle")
-        twinkle = @case poll begin
-            int('t') : (twinkle ? false : true)
-            default : twinkle
-        end
-        println("Twinkle is now: $twinkle")
+        #println("Twinkle was: $twinkle")
+        #twinkle = @case poll begin
+            #int('t') : (twinkle ? false : true)
+            #default : twinkle
+        #end
+        #println("Twinkle is now: $twinkle")
 
-        zoom += @case poll begin
-            SDLK_PAGEUP : -0.02
-            SDLK_PAGEDOWN : 0.02
-            default : 0.0
-        end
+        #zoom += @case poll begin
+            #SDLK_PAGEUP : -0.02
+            #SDLK_PAGEDOWN : 0.02
+            #default : 0.0
+        #end
 
-        tilt += @case poll begin
-            SDLK_UP : -0.5
-            SDLK_DOWN : 0.5
-            default : 0.0
-        end
-    end
-
+        #tilt += @case poll begin
+            #SDLK_UP : -0.5
+            #SDLK_DOWN : 0.5
+            #default : 0.0
+        #end
+    #end
 end

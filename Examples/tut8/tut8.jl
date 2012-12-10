@@ -5,13 +5,54 @@
 
 # load necessary GL/SDL routines
 
-load("initGL.jl")
-initGL()
+load("image")
+
+require("SDL")
+using SDL
+
+# initialize variables
+
+bpp       = 16
+wintitle  = "NeHe Tut 8"
+icontitle = "NeHe Tut 8"
+width     = 640
+height    = 480
+
+# open SDL window with an OpenGL context
+
+sdl_init(SDL_INIT_VIDEO)
+#videoInfo = sdl_getvideoinfo()
+videoFlags = (SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE | SDL_RESIZABLE)
+#if videoInfo.hw_available
+    videoFlags = (videoFlags | SDL_HWSURFACE)
+#else
+    #videoFlags = (videoFlags | SDL_SWSURFACE)
+#end
+#if videoInfo.blit_hw
+    videoFlags = (videoFlags | SDL_HWACCEL)
+#end
+sdl_gl_setattribute(SDL_GL_DOUBLEBUFFER, 1)
+sdl_setvideomode(width, height, bpp, videoFlags)
+sdl_wm_setcaption(wintitle, icontitle)
+
+glviewport(0, 0, width, height)
+glclearcolor(0.0, 0.0, 0.0, 0.0)
+glcleardepth(1.0)			 
+gldepthfunc(GL_LESS)	 
+glenable(GL_DEPTH_TEST)
+glshademodel(GL_SMOOTH)
+
+glmatrixmode(GL_PROJECTION)
+glloadidentity()
+
+gluperspective(45.0,width/height,0.1,100.0)
+
+glmatrixmode(GL_MODELVIEW)
 
 ### auxiliary functions
 
 function cube(size)  # the cube function now includes surface normal specification for proper lighting
-  @with glprimitive(GL_QUADS) begin
+  glbegin(GL_QUADS)
     # Front Face
     glnormal(0.0,0.0,1.0)
     gltexcoord(0.0, 0.0)
@@ -77,7 +118,7 @@ function cube(size)  # the cube function now includes surface normal specificati
     glvertex(-size, size, size)
     gltexcoord(0.0, 1.0)
     glvertex(-size, size, -size)
-  end
+  glend()
 end
 
 ### end of auxiliary functions
@@ -93,9 +134,9 @@ yrot          = 0.0
 xspeed        = 0.0
 yspeed        = 0.0
 
-z             = 0.8
+z             = -5.0
 
-cube_size     = 0.2
+cube_size     = 1.0
 
 LightAmbient  = [0.5, 0.5, 0.5, 1.0]
 LightDiffuse  = [1.0, 1.0, 1.0, 1.0]
@@ -103,9 +144,26 @@ LightPosition = [0.0, 0.0, 2.0, 1.0]
 
 # load textures from images
 
-tex1 = SDLIMGLoad("glass.bmp",1) # nearest filtering
-tex2 = SDLIMGLoad("glass.bmp",2) # linear filtering
-tex3 = SDLIMGLoad("glass.bmp",3) # mipmap filtering
+tex = Array(Uint8,3) # generating 3 textures
+img = imread("glass.bmp")
+glgentextures(3,tex)
+
+glbindtexture(GL_TEXTURE_2D,tex[1])
+gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+glteximage2d(GL_TEXTURE_2D, 0, 3, size(img,1), size(img,2), 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+
+glbindtexture(GL_TEXTURE_2D,tex[2])
+gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+glteximage2d(GL_TEXTURE_2D, 0, 3, size(img,1), size(img,2), 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+
+glbindtexture(GL_TEXTURE_2D,tex[3])
+gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST)
+glteximage2d(GL_TEXTURE_2D, 0, 3, size(img,1), size(img,2), 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+
+glubuild2dmipmaps(GL_TEXTURE_2D, 3, size(img,1), size(img,2), GL_RGB, GL_UNSIGNED_BYTE, img)
 
 # initialize lights
 
@@ -127,6 +185,8 @@ glcolor(1.0, 1.0, 1.0, 0.5)
 # drawing routines
 
 while true
+    glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glloadidentity()
 
     gltranslate(0.0, 0.0, z)
 
@@ -134,80 +194,79 @@ while true
     glrotate(yrot,0.0,1.0,0.0)
 
     if filter == 0
-        glbindtexture(GL_TEXTURE_2D,tex1)
+        glbindtexture(GL_TEXTURE_2D,tex[1])
     elseif filter == 1
-        glbindtexture(GL_TEXTURE_2D,tex2)
+        glbindtexture(GL_TEXTURE_2D,tex[2])
     elseif filter == 2
-        glbindtexture(GL_TEXTURE_2D,tex3)
+        glbindtexture(GL_TEXTURE_2D,tex[3])
     end
     cube(cube_size)
 
     xrot +=xspeed
     yrot +=yspeed
 
-    SwapAndClear()
+    sdl_gl_swapbuffers()
 
     # check key presses
-    while true
-        poll = poll_event()
-        @case poll begin
-            int('q') : return
-            SDL_EVENTS_DONE   : break
-        end
+    #while true
+        #poll = poll_event()
+        #@case poll begin
+            #int('q') : return
+            #SDL_EVENTS_DONE   : break
+        #end
 
-        println("Blend was: $blend")
-        blend = @case poll begin
-            int('b') : (blend ? false : true)
-            default : blend
-        end
-        println("Blend is now: $blend")
-        if !blend
-            glenable(GL_BLEND)
-            gldisable(GL_DEPTH_TEST)
-        else
-            gldisable(GL_BLEND)
-            glenable(GL_DEPTH_TEST)
-        end
+        #println("Blend was: $blend")
+        #blend = @case poll begin
+            #int('b') : (blend ? false : true)
+            #default : blend
+        #end
+        #println("Blend is now: $blend")
+        #if !blend
+            #glenable(GL_BLEND)
+            #gldisable(GL_DEPTH_TEST)
+        #else
+            #gldisable(GL_BLEND)
+            #glenable(GL_DEPTH_TEST)
+        #end
 
-        println("Light was: $light")
-        light = @case poll begin
-            int('l') : (light ? false : true)
-            default : light
-        end
-        println("Light is now: $light")
-        if !light
-            gldisable(GL_LIGHTING)
-        else
-            glenable(GL_LIGHTING)
-        end
+        #println("Light was: $light")
+        #light = @case poll begin
+            #int('l') : (light ? false : true)
+            #default : light
+        #end
+        #println("Light is now: $light")
+        #if !light
+            #gldisable(GL_LIGHTING)
+        #else
+            #glenable(GL_LIGHTING)
+        #end
 
-        println("Filter was: $filter")
-        filter += @case poll begin
-            int('f') : 1
-            default : 0
-        end
-        if filter > 2
-            filter = 0
-        end
-        println("Filter is now: $filter")
+        #println("Filter was: $filter")
+        #filter += @case poll begin
+            #int('f') : 1
+            #default : 0
+        #end
+        #if filter > 2
+            #filter = 0
+        #end
+        #println("Filter is now: $filter")
 
-        z += @case poll begin
-            SDLK_PAGEUP : -0.02
-            SDLK_PAGEDOWN : 0.02
-            default : 0.0
-        end
+        #z += @case poll begin
+            #SDLK_PAGEUP : -0.02
+            #SDLK_PAGEDOWN : 0.02
+            #default : 0.0
+        #end
 
-        xspeed += @case poll begin
-            SDLK_UP : -0.01
-            SDLK_DOWN : 0.01
-            default : 0.0
-        end
+        #xspeed += @case poll begin
+            #SDLK_UP : -0.01
+            #SDLK_DOWN : 0.01
+            #default : 0.0
+        #end
 
-        yspeed += @case poll begin
-            SDLK_LEFT : -0.01
-            SDLK_RIGHT : 0.01
-            default : 0.0
-        end
-    end
-
+        #yspeed += @case poll begin
+            #SDLK_LEFT : -0.01
+            #SDLK_RIGHT : 0.01
+            #default : 0.0
+        #end
+    #end
 end
