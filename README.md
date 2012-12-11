@@ -40,7 +40,7 @@ The VAST majority of work was done by Jasper den Ouden
 examples, and responses to my questions, I would never have been able to put
 this into a Julia package.  All credit goes to him.
 
-I'd also like to thank the developers of the free/open-source SDL API
+We'd also like to thank the developers of the free/open-source SDL API
 (http://www.libsdl.org). It is a simple, yet powerful, way to develop a
 wide-range of multimedia applications and has found it's way into many
 operating environments.
