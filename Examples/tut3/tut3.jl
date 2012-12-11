@@ -75,13 +75,4 @@ while true
     glend()
 
     sdl_gl_swapbuffers()
-
-    # check key presses
-    #while true
-        #poll = poll_event()
-        #@case poll begin
-            #int('q') : return
-            #SDL_EVENTS_DONE   : break
-        #end
-    #end
 end

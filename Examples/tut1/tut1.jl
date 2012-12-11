@@ -54,13 +54,4 @@ while true
     glloadidentity()
 
     sdl_gl_swapbuffers()
-
-    ##check key presses
-    #while true
-        #poll = sdl_pollevent()
-        #@case poll begin
-            #int('q') : return # convert keys to corresponding ASCII codes
-            #SDL_EVENTS_DONE   : break
-        #end
-    #end
 end

@@ -127,8 +127,14 @@ cube_size = 1.0
 
 # load textures from images
 
-tex = Array(Uint8,1) # generating 1 texture
-img = glimread("NeHe.bmp")
+tex   = Array(Uint8,1) # generating 1 texture
+
+img3D = imread("NeHe.bmp")
+w     = size(img3D,2)
+h     = size(img3D,1)
+
+img   = glimg(img3D) # see OpenGLAux.jl for description
+
 glgentextures(1,tex)
 glbindtexture(GL_TEXTURE_2D,tex[1])
 gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
@@ -159,13 +165,4 @@ while true
     zrot +=0.4
 
     sdl_gl_swapbuffers()
-
-    # check key presses
-    #while true
-        #poll = poll_event()
-        #@case poll begin
-            #int('q') : return
-            #SDL_EVENTS_DONE   : break
-        #end
-    #end
 end

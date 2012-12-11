@@ -144,26 +144,31 @@ LightPosition = [0.0, 0.0, 2.0, 1.0]
 
 # load textures from images
 
-tex = Array(Uint8,3) # generating 3 textures
-img = imread("glass.bmp")
-glgentextures(3,tex)
+tex   = Array(Uint8,3) # generating 3 textures
 
+img3D = imread("glass.bmp")
+w     = size(img3D,2)
+h     = size(img3D,1)
+
+img   = glimg(img3D) # see OpenGLAux.jl for description
+
+glgentextures(3,tex)
 glbindtexture(GL_TEXTURE_2D,tex[1])
 gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
 gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-glteximage2d(GL_TEXTURE_2D, 0, 3, size(img,1), size(img,2), 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+glteximage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 
 glbindtexture(GL_TEXTURE_2D,tex[2])
 gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
 gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-glteximage2d(GL_TEXTURE_2D, 0, 3, size(img,1), size(img,2), 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+glteximage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 
 glbindtexture(GL_TEXTURE_2D,tex[3])
 gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
 gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST)
-glteximage2d(GL_TEXTURE_2D, 0, 3, size(img,1), size(img,2), 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+glteximage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 
-glubuild2dmipmaps(GL_TEXTURE_2D, 3, size(img,1), size(img,2), GL_RGB, GL_UNSIGNED_BYTE, img)
+glubuild2dmipmaps(GL_TEXTURE_2D, 3, w, h, GL_RGB, GL_UNSIGNED_BYTE, img)
 
 # initialize lights
 
@@ -206,67 +211,4 @@ while true
     yrot +=yspeed
 
     sdl_gl_swapbuffers()
-
-    # check key presses
-    #while true
-        #poll = poll_event()
-        #@case poll begin
-            #int('q') : return
-            #SDL_EVENTS_DONE   : break
-        #end
-
-        #println("Blend was: $blend")
-        #blend = @case poll begin
-            #int('b') : (blend ? false : true)
-            #default : blend
-        #end
-        #println("Blend is now: $blend")
-        #if !blend
-            #glenable(GL_BLEND)
-            #gldisable(GL_DEPTH_TEST)
-        #else
-            #gldisable(GL_BLEND)
-            #glenable(GL_DEPTH_TEST)
-        #end
-
-        #println("Light was: $light")
-        #light = @case poll begin
-            #int('l') : (light ? false : true)
-            #default : light
-        #end
-        #println("Light is now: $light")
-        #if !light
-            #gldisable(GL_LIGHTING)
-        #else
-            #glenable(GL_LIGHTING)
-        #end
-
-        #println("Filter was: $filter")
-        #filter += @case poll begin
-            #int('f') : 1
-            #default : 0
-        #end
-        #if filter > 2
-            #filter = 0
-        #end
-        #println("Filter is now: $filter")
-
-        #z += @case poll begin
-            #SDLK_PAGEUP : -0.02
-            #SDLK_PAGEDOWN : 0.02
-            #default : 0.0
-        #end
-
-        #xspeed += @case poll begin
-            #SDLK_UP : -0.01
-            #SDLK_DOWN : 0.01
-            #default : 0.0
-        #end
-
-        #yspeed += @case poll begin
-            #SDLK_LEFT : -0.01
-            #SDLK_RIGHT : 0.01
-            #default : 0.0
-        #end
-    #end
 end

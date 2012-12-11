@@ -86,13 +86,19 @@ twinkle = false
 
 # load textures from images
 
-tex = Array(Uint8,1) # generating 1 texture
-img = imread("Star.bmp")
+tex   = Array(Uint8,1) # generating 1 textures
+
+img3D = imread("Star.bmp")
+w     = size(img3D,2)
+h     = size(img3D,1)
+
+img   = glimg(img3D) # see OpenGLAux.jl for description
+
 glgentextures(1,tex)
 glbindtexture(GL_TEXTURE_2D,tex[1])
 gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
 gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-glteximage2d(GL_TEXTURE_2D, 0, 3, size(img,1), size(img,2), 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+glteximage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 
 # enable texture mapping and alpha blending
 
@@ -167,32 +173,4 @@ while true
     end
 
     sdl_gl_swapbuffers()
-
-    # check key presses
-    #while true
-        #poll = poll_event()
-        #@case poll begin
-            #int('q') : return
-            #SDL_EVENTS_DONE   : break
-        #end
-
-        #println("Twinkle was: $twinkle")
-        #twinkle = @case poll begin
-            #int('t') : (twinkle ? false : true)
-            #default : twinkle
-        #end
-        #println("Twinkle is now: $twinkle")
-
-        #zoom += @case poll begin
-            #SDLK_PAGEUP : -0.02
-            #SDLK_PAGEDOWN : 0.02
-            #default : 0.0
-        #end
-
-        #tilt += @case poll begin
-            #SDLK_UP : -0.5
-            #SDLK_DOWN : 0.5
-            #default : 0.0
-        #end
-    #end
 end
