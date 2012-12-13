@@ -13,7 +13,7 @@ module SDL
 
 import GetC.@get_c_fun
 
-#TODO: read struct info from SDL_SetVideoMode into this composite type
+#TODO: read struct info from SDL_GetVideoInfo into this composite type
 #type SDL_VideoInfo 
 	#hw_available::Uint32 #:1
 	#wm_available::Uint32 #:1
@@ -51,14 +51,50 @@ export sdl_wm_setcaption
 export sdl_gl_setattribute
 
 #TODO: read up on the event system in SDL
-#type SDL_Event_Ptr
-    #ptr::Ptr{Void}
+#type SDL_Event
+    #etype::Uint8
+    #active::Ptr{Void}
+    #key::Ptr{Void}
+    #motion::Ptr{Void}
+    #button::Ptr{Void}
+    #jaxis::Ptr{Void}
+    #jball::Ptr{Void}
+    #jhat::Ptr{Void}
+    #jbutton::Ptr{Void}
+    #resize::Ptr{Void}
+    #expose::Ptr{Void}
+    #quit::Ptr{Void}
+    #user::Ptr{Void}
+    #syswm::Ptr{Void}
 #end
+#export SDL_Event
 
 #function sdl_pollevent(Event::SDL_Event)
-    #ccall(dlsym(sdl, :SDL_PollEvent), Int32, (Ptr{Void},) Event.ptr)
+    #iostr = IOString()
+    #pack(iostr, Event)
+    #errnum = ccall(dlsym(sdl, :SDL_PollEvent), Int32, (Ptr{Void},), iostr.data)
+    #Event2 = unpack(iostr, Event)
+    #return Event.etype
 #end
 #export sdl_pollevent
+
+#@get_c_fun sdl sdl_pumpevents SDL_PumpEvents()::Void
+
+#function sdl_getkeystate(numkeys)
+    #keystate = ccall(dlsym(sdl, :SDL_GetKeyState), Ptr{Uint8}, (Ptr{Int32}, ), numkeys)
+    #return pointer_to_array(keystate, 1)
+#end
+#export sdl_getkeystate
+
+#function sdl_getmousestate(x, y)
+    #ccall(dlsym(sdl, :SDL_GetMouseState), Uint8, (Ptr{Int32}, Ptr{Int32}), &x, &y)
+#end
+#export sdl_getmousestate
+
+#function sdl_getrelativemousestate(x, y)
+    #ccall(dlsym(sdl, :SDL_GetRelativeMouseState), Uint8, (Ptr{Int32}, Ptr{Int32}), &x, &y)
+#end
+#export sdl_getrelativemousestate
 
 const SDL_INIT_VIDEO            = 0x00000020
 const SDL_SWSURFACE             = 0x00000000
