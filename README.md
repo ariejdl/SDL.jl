@@ -10,8 +10,9 @@ implemented very soon.)
 
 Many SDL functions are working, but many (specifically those that process
 keyboard and mouse input) are still not fully working. (You can edit the method
-signatures by hand, but it is a painful process.  Jasper's FFI will soon handle
-this automatically!)
+signatures by hand, but it is a painful process.  Jasper's FFI
+(https://github.com/o-jasper/julia-ffi.git) will soon handle this
+automatically!)
 
 #TODO
 
