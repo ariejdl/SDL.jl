@@ -16,6 +16,7 @@ this automatically!)
 #TODO
 
 + Fix performance hiccups
++ Fix strange graphical issues (e.g., gllighting routines)
 + FFI the whole library
 + Implement mouse/keyboard routines
 + Find a way to close an SDL instance without quitting the Julia REPL that
@@ -26,11 +27,21 @@ this automatically!)
 PLEASE NOTE: When used in a Julia file, all of the function names are written in
 lowercase. For example:
 
-C - Julia comparisons
+In C-SDL code, one would write,
 
-+ SDL_Init -												 sdl_init
-+ SDL_GetVideoInfo - 								 sdl_getvideoinfo
-+ SDL_GL_SwapBuffers - 							 sdl_gl_swapbuffers
+```c
+SDL_Init
+SDL_GetVideoInfo
+SDL_GL_SwapBuffers
+```
+
+In a Julia-SDL code, one would write:
+
+```julia
+sdl_init
+sdl_getvideoinfo
+sdl_gl_swapbuffers
+```
 
 See the Examples directory for translations of the first ten NeHe tutorials
 into Julia-SDL.
