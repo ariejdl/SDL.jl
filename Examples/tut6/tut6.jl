@@ -129,7 +129,7 @@ cube_size = 1.0
 
 tex   = Array(Uint8,1) # generating 1 texture
 
-img3D = imread("NeHe.bmp")
+img3D = imread(path_expand("~/.julia/SDL/Examples/tut6/NeHe.bmp"))
 w     = size(img3D,2)
 h     = size(img3D,1)
 

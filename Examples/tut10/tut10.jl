@@ -134,7 +134,7 @@ sector1 = SetupWorld("world.txt")
 
 tex   = Array(Uint8,3) # generating 3 textures
 
-img3D = imread("mud.bmp")
+img3D = imread(path_expand("~/.julia/SDL/Examples/tut10/mud.bmp"))
 w     = size(img3D,2)
 h     = size(img3D,1)
 

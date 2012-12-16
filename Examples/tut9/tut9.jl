@@ -88,7 +88,7 @@ twinkle = false
 
 tex   = Array(Uint8,1) # generating 1 textures
 
-img3D = imread("Star.bmp")
+img3D = imread(path_expand("~/.julia/SDL/Examples/tut9/Star.bmp"))
 w     = size(img3D,2)
 h     = size(img3D,1)
 

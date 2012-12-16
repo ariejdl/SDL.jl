@@ -146,7 +146,7 @@ LightPosition = [0.0, 0.0, 2.0, 1.0]
 
 tex   = Array(Uint8,3) # generating 3 textures
 
-img3D = imread("glass.bmp")
+img3D = imread(path_expand("~/.julia/SDL/Examples/tut8/glass.bmp"))
 w     = size(img3D,2)
 h     = size(img3D,1)
 
