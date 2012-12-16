@@ -128,7 +128,7 @@ sceneroty     = 0.0
 
 # initialize sector1 with SetupWorld
 
-sector1 = SetupWorld("world.txt")
+sector1 = SetupWorld(path_expand("~/.julia/SDL/Examples/tut10/world.txt"))
 
 # load textures from images
 
