@@ -49,6 +49,8 @@ export sdl_getvideoinfo
 export sdl_wm_setcaption
 @get_c_fun sdl sdl_gl_setattribute SDL_GL_SetAttribute(attr::Uint32,value::Int32)::Void
 export sdl_gl_setattribute
+@get_c_fun sdl sdl_quit SDL_Quit()::Void
+export sdl_quit
 
 #TODO: read up on the event system in SDL
 #type SDL_Event
@@ -78,23 +80,32 @@ export sdl_gl_setattribute
 #end
 #export sdl_pollevent
 
-#@get_c_fun sdl sdl_pumpevents SDL_PumpEvents()::Void
+@get_c_fun sdl sdl_pumpevents SDL_PumpEvents()::Void
+export sdl_pumpevents
 
-#function sdl_getkeystate(numkeys)
-    #keystate = ccall(dlsym(sdl, :SDL_GetKeyState), Ptr{Uint8}, (Ptr{Int32}, ), numkeys)
-    #return pointer_to_array(keystate, 1)
-#end
-#export sdl_getkeystate
+function sdl_getkeystate()
+    numkeys = Array(Int32,1)
+    keystate = ccall(dlsym(sdl, :SDL_GetKeyState), Ptr{Uint8}, (Ptr{Int32}, ), numkeys)
+    keystate = bool(pointer_to_array(keystate, (1,int64(numkeys[1]))))
+    return keystate[2:end] #TODO: find a better way to solve the off-by-one indexing issue
+end
+export sdl_getkeystate
 
-#function sdl_getmousestate(x, y)
-    #ccall(dlsym(sdl, :SDL_GetMouseState), Uint8, (Ptr{Int32}, Ptr{Int32}), &x, &y)
-#end
-#export sdl_getmousestate
+function sdl_getmousestate()
+    x = Array(Int32,1)
+    y = Array(Int32,1)
+    button = ccall(dlsym(sdl, :SDL_GetMouseState), Uint8, (Ptr{Int32}, Ptr{Int32}), x, y)
+    return int64(x[1]), int64(y[1]), button
+end
+export sdl_getmousestate
 
-#function sdl_getrelativemousestate(x, y)
-    #ccall(dlsym(sdl, :SDL_GetRelativeMouseState), Uint8, (Ptr{Int32}, Ptr{Int32}), &x, &y)
-#end
-#export sdl_getrelativemousestate
+function sdl_getrelativemousestate()
+    x = Array(Int32,1)
+    y = Array(Int32,1)
+    button = ccall(dlsym(sdl, :SDL_GetRelativeMouseState), Uint8, (Ptr{Int32}, Ptr{Int32}), x, y)
+    return int64(x[1]), int64(y[1]), button
+end
+export sdl_getrelativemousestate
 
 const SDL_INIT_VIDEO            = 0x00000020
 const SDL_SWSURFACE             = 0x00000000

@@ -1,27 +1,14 @@
-One mention of caution: Please don't use this without saving important work
-first.  I have had two instances in which a GLUT/SDL instance crashed my X11
-session.  It appears to happen very rarely, but no harm in being safe.
-
 This package is intended to be a fully fledged Julia (http://www.julialang.org)
 interface to the SDL implementation on your machine.
 
-NOTE: Keyboard/mouse routines have not been implemented yet! (This should be
-implemented very soon.)
+NOTE: It is recommended that you use the proprietary drivers for your graphics
+card.  Open-source drivers produce poor performance and have caused X11 to
+crash before. 
 
-Many SDL functions are working, but many (specifically those that process
-keyboard and mouse input) are still not fully working. (You can edit the method
-signatures by hand, but it is a painful process.  Jasper's FFI
+Many SDL functions are working, but many are still not fully working. (You can
+edit the method signatures by hand, but it is a painful process.  Jasper's FFI
 (https://github.com/o-jasper/julia-ffi.git) will soon handle this
 automatically!)
-
-#TODO
-
-+ Fix performance hiccups
-+ Fix strange graphical issues (e.g., gllighting routines)
-+ FFI the whole library
-+ Implement mouse/keyboard routines
-+ Find a way to close an SDL instance without quitting the Julia REPL that
-	created it
 
 #Usage notes
 
@@ -47,8 +34,7 @@ sdl_gl_swapbuffers
 See the Examples directory for translations of the first ten NeHe tutorials
 into Julia-SDL.
 
-At the moment, this has only been tested on a 2010 Macbook running Linux
-(Fedora 17) and a custom built PC desktop running Linux (Fedora 17). Have fun!
+Have fun!
 
 #Credit
 

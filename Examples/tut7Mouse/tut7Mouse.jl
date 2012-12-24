@@ -1,6 +1,6 @@
 # Thu 08 Nov 2012 05:07:44 PM EST
 #
-# NeHe Tut 7 - Implement lights and rotate a textured cube
+# NeHe Tut 7 Mouse - Implement lights and rotate a textured cube with the mouse
 
 
 # load necessary GL/SDL routines
@@ -12,13 +12,11 @@ using SDL
 
 # initialize variables
 
-bpp            = 16
-wintitle       = "NeHe Tut 7"
-icontitle      = "NeHe Tut 7"
-width          = 640
-height         = 480
-
-saved_keystate = false
+bpp       = 16
+wintitle  = "NeHe Tut 7"
+icontitle = "NeHe Tut 7"
+width     = 640
+height    = 480
 
 # open SDL window with an OpenGL context
 
@@ -127,23 +125,23 @@ end
 
 # initialize variables
 
-filter         = 2
-light          = false
+filter        = 2
+light         = false
 
-xrot           = 0.0
-yrot           = 0.0
-xspeed         = 0.0
-yspeed         = 0.0
+xrot          = 0.0
+yrot          = 0.0
+xspeed        = 0.0
+yspeed        = 0.0
+x_thresh      = 1
+y_thresh      = 1
 
-z              = -5.0
+z             = -5.0
 
-cube_size      = 1.0
+cube_size     = 1.0
 
-LightAmbient   = [0.5, 0.5, 0.5, 1.0]
-LightDiffuse   = [1.0, 1.0, 1.0, 1.0]
-LightPosition  = [0.0, 0.0, 2.0, 1.0]
-
-saved_keystate = false
+LightAmbient  = [0.5, 0.5, 0.5, 1.0]
+LightDiffuse  = [1.0, 1.0, 1.0, 1.0]
+LightPosition = [0.0, 0.0, 2.0, 1.0]
 
 # load textures from images
 
@@ -213,51 +211,56 @@ while true
     sdl_pumpevents()
     keystate = sdl_getkeystate()
 
-    # Julia is so fast that a single key press lasts through several iterations
-    # of this loop.  This means that one press is seen as 50 or more presses by
-    # the SDL event system, which can make the demo very bewildering.  To
-    # correct this, we only check keypresses when the keyboard state has
-    # changed.  An unfortunate down-side, for instance, is that the "UP" key
-    # cannot be held to make "xspeed" increase continuosly.  One must press the
-    # "UP" button over and over to increase "xspeed" in discrete steps.
-
-    if saved_keystate == false
-        prev_keystate = keystate
-        saved_keystate = true
+    if keystate[SDLK_q] == true
+        break
+    elseif keystate[SDLK_l] == true
+        println("Light was: $light")
+        light = (light ? false : true)
+        println("Light is now: $light")
+        if !light
+            gldisable(GL_LIGHTING)
+        else
+            glenable(GL_LIGHTING)
+        end
+    elseif keystate[SDLK_f] == true
+        println("Filter was: $filter")
+        filter += 1
+        if filter > 2
+            filter = 0
+        end
+        println("Filter is now: $filter")
     end
 
-    if keystate != prev_keystate
-        if keystate[SDLK_q] == true
-            break
-        elseif keystate[SDLK_l] == true
-            println("Light was: $light")
-            light = (light ? false : true)
-            println("Light is now: $light")
-            if !light
-                gldisable(GL_LIGHTING)
-            else
-                glenable(GL_LIGHTING)
-            end
-        elseif keystate[SDLK_f] == true
-            println("Filter was: $filter")
-            filter += 1
-            if filter > 2
-                filter = 0
-            end
-            println("Filter is now: $filter")
-        elseif keystate[SDLK_PAGEUP] == true
-            z -= 0.02
-        elseif keystate[SDLK_PAGEDOWN] == true
-            z += 0.02
-        elseif keystate[SDLK_UP] == true
-            xspeed -= 0.01
-        elseif keystate[SDLK_DOWN] == true
-            xspeed += 0.01
-        elseif keystate[SDLK_LEFT] == true
+    (mouse_x, mouse_y, button) = sdl_getmousestate()
+    println("Mouse moved at ($mouse_x, $mouse_y).")
+
+    if button == SDL_BUTTON_LEFT
+        println("Left button pressed at ($mouse_x, $mouse_y).")
+        if (mouse_x - prev_x) > x_thresh
             yspeed -= 0.01
-        elseif keystate[SDLK_RIGHT] == true
+        elseif (mouse_x - prev_x) < -x_thresh
             yspeed += 0.01
         end
-        prev_keystate = keystate
+
+        if (mouse_y - prev_y) > y_thresh
+            xspeed -= 0.01
+        elseif (mouse_y - prev_y) < -y_thresh
+            xspeed += 0.01
+        end
+    elseif button == SDL_BUTTON_MIDDLE 
+        println("Middle button pressed at ($mouse_x, $mouse_y).")
+        if (mouse_y - prev_y) > y_thresh
+            z -= 0.02
+        elseif (mouse_y - prev_y) < -y_thresh
+            z += 0.02
+        end
+    elseif button == SDL_BUTTON_RIGHT
+        println("Right button pressed at ($mouse_x, $mouse_y).")
     end
+
+    prev_y = mouse_y
+    prev_x = mouse_x
+
+    (rel_mouse_x, rel_mouse_y, rel_button) = sdl_getrelativemousestate()
+    println("Mouse moved (relative) at ($rel_mouse_x, $rel_mouse_y).")
 end

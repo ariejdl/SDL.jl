@@ -12,11 +12,13 @@ using SDL
 
 # initialize variables
 
-bpp       = 16
-wintitle  = "NeHe Tut 8"
-icontitle = "NeHe Tut 8"
-width     = 640
-height    = 480
+bpp            = 16
+wintitle       = "NeHe Tut 8"
+icontitle      = "NeHe Tut 8"
+width          = 640
+height         = 480
+
+saved_keystate = false
 
 # open SDL window with an OpenGL context
 
@@ -211,4 +213,66 @@ while true
     yrot +=yspeed
 
     sdl_gl_swapbuffers()
+
+    sdl_pumpevents()
+    keystate = sdl_getkeystate()
+
+    # Julia is so fast that a single key press lasts through several iterations
+    # of this loop.  This means that one press is seen as 50 or more presses by
+    # the SDL event system, which can make the demo very bewildering.  To
+    # correct this, we only check keypresses when the keyboard state has
+    # changed.  An unfortunate down-side, for instance, is that the "UP" key
+    # cannot be held to make "xspeed" increase continuosly.  One must press the
+    # "UP" button over and over to increase "xspeed" in discrete steps.
+
+    if saved_keystate == false
+        prev_keystate = keystate
+        saved_keystate = true
+    end
+
+    if keystate != prev_keystate
+        if keystate[SDLK_q] == true
+            break
+        elseif keystate[SDLK_b] == true
+            println("Blend was: $blend")
+            blend = (blend ? false : true)
+            if !blend
+                glenable(GL_BLEND)
+                gldisable(GL_DEPTH_TEST)
+            else
+                gldisable(GL_BLEND)
+                glenable(GL_DEPTH_TEST)
+            end
+            println("Blend is now: $blend")
+        elseif keystate[SDLK_l] == true
+            println("Light was: $light")
+            light = (light ? false : true)
+            println("Light is now: $light")
+            if !light
+                gldisable(GL_LIGHTING)
+            else
+                glenable(GL_LIGHTING)
+            end
+        elseif keystate[SDLK_f] == true
+            println("Filter was: $filter")
+            filter += 1
+            if filter > 2
+                filter = 0
+            end
+            println("Filter is now: $filter")
+        elseif keystate[SDLK_PAGEUP] == true
+            z -= 0.02
+        elseif keystate[SDLK_PAGEDOWN] == true
+            z += 0.02
+        elseif keystate[SDLK_UP] == true
+            xspeed -= 0.01
+        elseif keystate[SDLK_DOWN] == true
+            xspeed += 0.01
+        elseif keystate[SDLK_LEFT] == true
+            yspeed -= 0.01
+        elseif keystate[SDLK_RIGHT] == true
+            yspeed += 0.01
+        end
+        prev_keystate = keystate
+    end
 end

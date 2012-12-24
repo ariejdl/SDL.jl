@@ -12,11 +12,13 @@ using SDL
 
 # initialize variables
 
-bpp       = 16
-wintitle  = "NeHe Tut 10"
-icontitle = "NeHe Tut 10"
-width     = 640
-height    = 480
+bpp            = 16
+wintitle       = "NeHe Tut 10"
+icontitle      = "NeHe Tut 10"
+width          = 640
+height         = 480
+
+saved_keystate = false
 
 # open SDL window with an OpenGL context
 
@@ -114,7 +116,7 @@ LightPosition = [0.0, 0.0, 2.0, 1.0]
 
 filter        = 1
 light         = true
-blend         = true
+blend         = false
 
 x_m           = 0.0
 y_m           = 0.0
@@ -230,4 +232,82 @@ while true
     end
 
     sdl_gl_swapbuffers()
+
+    sdl_pumpevents()
+    keystate = sdl_getkeystate()
+
+    # Julia is so fast that a single key press lasts through several iterations
+    # of this loop.  This means that one press is seen as 50 or more presses by
+    # the SDL event system, which can make the demo very bewildering.  To
+    # correct this, we only check keypresses when the keyboard state has
+    # changed.  An unfortunate down-side, for instance, is that the "UP" key
+    # cannot be held to make "xspeed" increase continuosly.  One must press the
+    # "UP" button over and over to increase "xspeed" in discrete steps.
+
+    if saved_keystate == false
+        prev_keystate = keystate
+        saved_keystate = true
+    end
+
+    if keystate != prev_keystate
+        if keystate[SDLK_q] == true
+            break
+        elseif keystate[SDLK_b] == true
+            println("Blend was: $blend")
+            blend = (blend ? false : true)
+            if !blend
+                glenable(GL_BLEND)
+                gldisable(GL_DEPTH_TEST)
+            else
+                gldisable(GL_BLEND)
+                glenable(GL_DEPTH_TEST)
+            end
+            println("Blend is now: $blend")
+        elseif keystate[SDLK_l] == true
+            println("Light was: $light")
+            light = (light ? false : true)
+            println("Light is now: $light")
+            if !light
+                gldisable(GL_LIGHTING)
+            else
+                glenable(GL_LIGHTING)
+            end
+        elseif keystate[SDLK_f] == true
+            println("Filter was: $filter")
+            filter += 1
+            if filter > 2
+                filter = 0
+            end
+            println("Filter is now: $filter")
+        elseif keystate[SDLK_PAGEUP] == true
+            lookupdown -= 0.2
+        elseif keystate[SDLK_PAGEDOWN] == true
+            lookupdown += 1.0
+        elseif keystate[SDLK_UP] == true
+            xpos -= sin(degrees2radians(yrot))*0.05
+            zpos -= cos(degrees2radians(yrot))*0.05
+            walkbias += 10
+            if walkbiasangle <= 359.0
+                walkbiasangle = 0.0
+            else
+                walkbiasangle += 10
+            end
+            walkbias = sin(degrees2radians(walkbiasangle))/20.0
+        elseif keystate[SDLK_DOWN] == true
+            xpos += sin(degrees2radians(yrot))*0.05
+            zpos += cos(degrees2radians(yrot))*0.05
+            walkbias -= 10
+            if walkbiasangle <= 1.0
+                walkbiasangle = 359.0
+            else
+                walkbiasangle -= 10
+            end
+            walkbias = sin(degrees2radians(walkbiasangle))/20.0
+        elseif keystate[SDLK_LEFT] == true
+            yrot += 1.5
+        elseif keystate[SDLK_RIGHT] == true
+            yrot -= 1.5
+        end
+        prev_keystate = keystate
+    end
 end
