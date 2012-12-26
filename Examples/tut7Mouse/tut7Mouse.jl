@@ -126,7 +126,7 @@ end
 # initialize variables
 
 filter        = 2
-light         = false
+light         = true
 
 xrot          = 0.0
 yrot          = 0.0
@@ -139,13 +139,13 @@ z             = -5.0
 
 cube_size     = 1.0
 
-LightAmbient  = [0.5, 0.5, 0.5, 1.0]
-LightDiffuse  = [1.0, 1.0, 1.0, 1.0]
-LightPosition = [0.0, 0.0, 2.0, 1.0]
+LightAmbient  = [0.5f0, 0.5f0, 0.5f0, 1.0f0]
+LightDiffuse  = [1.0f0, 1.0f0, 1.0f0, 1.0f0]
+LightPosition = [0.0f0, 0.0f0, 2.0f0, 1.0f0]
 
 # load textures from images
 
-tex   = Array(Uint8,3) # generating 3 textures
+tex   = Array(Uint32,3) # generating 3 textures
 
 img3D = imread(path_expand("~/.julia/SDL/Examples/tut7/crate.bmp"))
 w     = size(img3D,2)
@@ -178,6 +178,7 @@ gllightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse)
 gllightfv(GL_LIGHT1, GL_POSITION, LightPosition)
 
 glenable(GL_LIGHT1)
+glenable(GL_LIGHTING)
 
 # enable texture mapping
 
@@ -217,10 +218,10 @@ while true
         println("Light was: $light")
         light = (light ? false : true)
         println("Light is now: $light")
-        if !light
-            gldisable(GL_LIGHTING)
-        else
+        if light
             glenable(GL_LIGHTING)
+        else
+            gldisable(GL_LIGHTING)
         end
     elseif keystate[SDLK_f] == true
         println("Filter was: $filter")

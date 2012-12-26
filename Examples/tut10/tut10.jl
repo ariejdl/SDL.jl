@@ -110,9 +110,9 @@ zpos          = 0.0
 
 yrot          = 0.0
 
-LightAmbient  = [0.5, 0.5, 0.5, 1.0]
-LightDiffuse  = [1.0, 1.0, 1.0, 1.0]
-LightPosition = [0.0, 0.0, 2.0, 1.0]
+LightAmbient  = [0.5f0, 0.5f0, 0.5f0, 1.0f0]
+LightDiffuse  = [1.0f0, 1.0f0, 1.0f0, 1.0f0]
+LightPosition = [0.0f0, 0.0f0, 2.0f0, 1.0f0]
 
 filter        = 1
 light         = true
@@ -134,7 +134,7 @@ sector1 = SetupWorld(path_expand("~/.julia/SDL/Examples/tut10/world.txt"))
 
 # load textures from images
 
-tex   = Array(Uint8,3) # generating 3 textures
+tex   = Array(Uint32,3) # generating 3 textures
 
 img3D = imread(path_expand("~/.julia/SDL/Examples/tut10/mud.bmp"))
 w     = size(img3D,2)
@@ -167,11 +167,11 @@ gllightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse)
 gllightfv(GL_LIGHT1, GL_POSITION, LightPosition)
 
 glenable(GL_LIGHT1)
+glenable(GL_LIGHTING)
 
-# enable texture mapping and alpha blending
+# enable texture mapping and setup alpha blending
 
 glenable(GL_TEXTURE_2D)
-glenable(GL_BLEND)
 glblendfunc(GL_SRC_ALPHA, GL_ONE)
 
 # drawing routines
@@ -255,7 +255,7 @@ while true
         elseif keystate[SDLK_b] == true
             println("Blend was: $blend")
             blend = (blend ? false : true)
-            if !blend
+            if blend
                 glenable(GL_BLEND)
                 gldisable(GL_DEPTH_TEST)
             else
@@ -267,10 +267,10 @@ while true
             println("Light was: $light")
             light = (light ? false : true)
             println("Light is now: $light")
-            if !light
-                gldisable(GL_LIGHTING)
-            else
+            if light
                 glenable(GL_LIGHTING)
+            else
+                gldisable(GL_LIGHTING)
             end
         elseif keystate[SDLK_f] == true
             println("Filter was: $filter")

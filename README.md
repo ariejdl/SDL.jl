@@ -23,7 +23,7 @@ SDL_GetVideoInfo
 SDL_GL_SwapBuffers
 ```
 
-In a Julia-SDL code, one would write:
+In Julia-SDL code, one would write:
 
 ```julia
 sdl_init

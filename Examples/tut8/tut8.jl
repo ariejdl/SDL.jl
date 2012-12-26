@@ -127,8 +127,8 @@ end
 
 # initialize variables
 
-light         = false
-blend         = false
+light         = true
+blend         = true
 filter        = 0
 
 xrot          = 0.0
@@ -140,13 +140,13 @@ z             = -5.0
 
 cube_size     = 1.0
 
-LightAmbient  = [0.5, 0.5, 0.5, 1.0]
-LightDiffuse  = [1.0, 1.0, 1.0, 1.0]
-LightPosition = [0.0, 0.0, 2.0, 1.0]
+LightAmbient  = [0.5f0, 0.5f0, 0.5f0, 1.0f0]
+LightDiffuse  = [1.0f0, 1.0f0, 1.0f0, 1.0f0]
+LightPosition = [0.0f0, 0.0f0, 2.0f0, 1.0f0]
 
 # load textures from images
 
-tex   = Array(Uint8,3) # generating 3 textures
+tex   = Array(Uint32,3) # generating 3 textures
 
 img3D = imread(path_expand("~/.julia/SDL/Examples/tut8/glass.bmp"))
 w     = size(img3D,2)
@@ -183,6 +183,7 @@ glenable(GL_LIGHT1)
 # enable texture mapping
 
 glenable(GL_TEXTURE_2D)
+glenable(GL_LIGHTING)
 
 # enable alpha blending for textures
 
@@ -236,7 +237,7 @@ while true
         elseif keystate[SDLK_b] == true
             println("Blend was: $blend")
             blend = (blend ? false : true)
-            if !blend
+            if blend
                 glenable(GL_BLEND)
                 gldisable(GL_DEPTH_TEST)
             else
@@ -248,10 +249,10 @@ while true
             println("Light was: $light")
             light = (light ? false : true)
             println("Light is now: $light")
-            if !light
-                gldisable(GL_LIGHTING)
-            else
+            if light
                 glenable(GL_LIGHTING)
+            else
+                gldisable(GL_LIGHTING)
             end
         elseif keystate[SDLK_f] == true
             println("Filter was: $filter")
