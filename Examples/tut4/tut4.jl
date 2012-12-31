@@ -16,6 +16,9 @@ icontitle      = "NeHe Tut 4"
 width          = 640
 height         = 480
 
+rtri           = 0.0
+rquad          = 0.0
+
 saved_keystate = false
 
 # open SDL window with an OpenGL context
@@ -48,11 +51,6 @@ glloadidentity()
 gluperspective(45.0,width/height,0.1,100.0)
 
 glmatrixmode(GL_MODELVIEW)
-
-# initialize variables
-
-rtri  = 0.0
-rquad = 0.0
 
 # drawing routines
 

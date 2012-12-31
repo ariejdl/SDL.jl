@@ -1,6 +1,6 @@
-# Tue 13 Nov 2012 04:13:36 PM EST 
+# Sun 30 Dec 2012 04:11:02 PM EST
 #
-# NeHe Tut 10 - Move around in a 3D world
+# NeHe Tut 18 - Make quadrics with GLU commands (builds on tut7)
 
 
 # load necessary GL/SDL routines
@@ -13,28 +13,34 @@ using SDL
 # initialize variables
 
 bpp            = 16
-wintitle       = "NeHe Tut 10"
-icontitle      = "NeHe Tut 10"
+wintitle       = "NeHe Tut 18"
+icontitle      = "NeHe Tut 18"
 width          = 640
 height         = 480
-
-walkbias       = 0.0
-walkbiasangle  = 0.0
-
-lookupdown     = 0.0
-
-xpos           = 0.0
-zpos           = 0.0
-
-yrot           = 0.0
-
-LightAmbient   = [0.5f0, 0.5f0, 0.5f0, 1.0f0]
-LightDiffuse   = [1.0f0, 1.0f0, 1.0f0, 1.0f0]
-LightPosition  = [0.0f0, 0.0f0, 2.0f0, 1.0f0]
 
 filter         = 3
 light          = true
 blend          = false
+
+part1          = 0
+part2          = 0
+p1             = 0
+p2             = 1
+
+object         = 0
+
+xrot           = 0.0
+yrot           = 0.0
+xspeed         = 0.0
+yspeed         = 0.0
+
+z              = -5.0
+
+cube_size      = 1.0
+
+LightAmbient   = [0.5f0, 0.5f0, 0.5f0, 1.0f0]
+LightDiffuse   = [1.0f0, 1.0f0, 1.0f0, 1.0f0]
+LightPosition  = [0.0f0, 0.0f0, 2.0f0, 1.0f0]
 
 saved_keystate = false
 
@@ -69,63 +75,85 @@ gluperspective(45.0,width/height,0.1,100.0)
 
 glmatrixmode(GL_MODELVIEW)
 
-
 ### auxiliary functions
 
-# initialize global variables
+function cube(size)  # the cube function now includes surface normal specification for proper lighting
+  glbegin(GL_QUADS)
+    # Front Face
+    glnormal(0.0,0.0,1.0)
+    gltexcoord(0.0, 0.0)
+    glvertex(-size, -size, size)
+    gltexcoord(1.0, 0.0)
+    glvertex(size, -size, size)
+    gltexcoord(1.0, 1.0)
+    glvertex(size, size, size)
+    gltexcoord(0.0, 1.0)
+    glvertex(-size, size, size)
 
-global numtriangles = 0
+    # Back Face
+    glnormal(0.0,0.0,-1.0)
+    gltexcoord(1.0, 0.0)
+    glvertex(-size, -size, -size)
+    gltexcoord(1.0, 1.0)
+    glvertex(-size, size, -size)
+    gltexcoord(0.0, 1.0)
+    glvertex(size, size, -size)
+    gltexcoord(0.0, 0.0)
+    glvertex(size, -size, -size)
 
-function SetupWorld(world_map::String)
+    # Top Face
+    glnormal(0.0,1.0,0.0)
+    gltexcoord(0.0, 1.0)
+    glvertex(-size, size, -size)
+    gltexcoord(0.0, 0.0)
+    glvertex(-size, size, size)
+    gltexcoord(1.0, 0.0)
+    glvertex(size, size, size)
+    gltexcoord(1.0, 1.0)
+    glvertex(size, size, -size)
 
-    global numtriangles
+    # Bottom Face
+    glnormal(0.0,-1.0,0.0)
+    gltexcoord(1.0, 1.0)
+    glvertex(-size, -size, -size)
+    gltexcoord(0.0, 1.0)
+    glvertex(size, -size, -size)
+    gltexcoord(0.0, 0.0)
+    glvertex(size, -size, size)
+    gltexcoord(1.0, 0.0)
+    glvertex(-size, -size, size)
 
-    filein       = open(world_map)
-    world_data   = readlines(filein)
+    # Right Face
+    glnormal(1.0,0.0,0.0)
+    gltexcoord(1.0, 0.0)
+    glvertex(size, -size, -size)
+    gltexcoord(1.0, 1.0)
+    glvertex(size, size, -size)
+    gltexcoord(0.0, 1.0)
+    glvertex(size, size, size)
+    gltexcoord(0.0, 0.0)
+    glvertex(size, -size, size)
 
-    numtriangles = parse_int(chomp(split(world_data[1],' ')[2]))
-
-    sector       = zeros(numtriangles,3,5)
-
-    loop = 1
-    vert = 1
-    line = 1
-    
-    while line <= length(world_data)-2
-        if world_data[2+line][1] != '/' && world_data[2+line][1] != '\n'
-            while vert <= 3
-                (x, y, z, u, v)      = split(chomp(world_data[2+line]),' ')
-                x                    = parse_float(x)
-                y                    = parse_float(y)
-                z                    = parse_float(z)
-                u                    = parse_float(u)
-                v                    = parse_float(v)
-                sector[loop,vert,:]  = [x,y,z,u,v]
-                vert                 += 1
-                line                 += 1
-            end
-            vert = 1
-            loop += 1
-        else
-            line += 1
-        end
-    end
-
-    return sector
-
+    # Left Face
+    glnormal(-1.0,0.0,0.0)
+    gltexcoord(0.0, 0.0)
+    glvertex(-size, -size, -size)
+    gltexcoord(1.0, 0.0)
+    glvertex(-size, -size, size)
+    gltexcoord(1.0, 1.0)
+    glvertex(-size, size, size)
+    gltexcoord(0.0, 1.0)
+    glvertex(-size, size, -size)
+  glend()
 end
 
 ### end of auxiliary functions
-
-# initialize sector1 with SetupWorld
-
-sector1 = SetupWorld(path_expand("~/.julia/SDL/Examples/tut10/world.txt"))
 
 # load textures from images
 
 tex   = Array(Uint32,3) # generating 3 textures
 
-img3D = imread(path_expand("~/.julia/SDL/Examples/tut10/mud.bmp"))
+img3D = imread(path_expand("~/.julia/SDL/Examples/tut18/crate.bmp"))
 w     = size(img3D,2)
 h     = size(img3D,1)
 
@@ -158,10 +186,18 @@ gllightfv(GL_LIGHT1, GL_POSITION, LightPosition)
 glenable(GL_LIGHT1)
 glenable(GL_LIGHTING)
 
-# enable texture mapping and setup alpha blending
+# enable texture mapping & blending
 
 glenable(GL_TEXTURE_2D)
 glblendfunc(GL_SRC_ALPHA, GL_ONE)
+glcolor(1.0, 1.0, 1.0, 0.5)
+
+# intialize quadric info
+
+quadratic = glunewquadric()
+
+gluquadricnormals(quadratic, GLU_SMOOTH)
+gluquadrictexture(quadratic, GL_TRUE)
 
 # drawing routines
 
@@ -169,45 +205,45 @@ while true
     glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glloadidentity()
 
-    xtrans = -xpos
-    ztrans = -zpos
-    ytrans = -walkbias-0.25
-    sceneroty = 360.0-yrot
+    gltranslate(0.0,0.0,z)
 
-    glrotate(lookupdown, 1.0, 0.0, 0.0)
-    glrotate(sceneroty, 0.0, 1.0, 0.0)
-    gltranslate(xtrans, ytrans, ztrans)
+    glrotate(xrot,1.0,0.0,0.0)
+    glrotate(yrot,0.0,1.0,0.0)
 
     glbindtexture(GL_TEXTURE_2D,tex[filter])
 
-    for face = 1:numtriangles
-        glbegin(GL_TRIANGLES)
-            glnormal(0.0, 0.0, 1.0)
-            x_m = sector1[face,1,1]
-            y_m = sector1[face,1,2]
-            z_m = sector1[face,1,3]
-            u_m = sector1[face,1,4]
-            v_m = sector1[face,1,5]
-            gltexcoord(u_m,v_m) 
-            glvertex(x_m,y_m,z_m)
+    if object == 0
+        cube(cube_size)
+    elseif object == 1
+        gltranslate(0.0, 0.0, -1.5)
+        glucylinder(quadratic, 1.0, 1.0, 3.0, 32, 32)
+    elseif object == 2
+        gludisk(quadratic, 0.5, 1.5, 32, 32)
+    elseif object == 3
+        glusphere(quadratic, 1.3, 32, 32)
+    elseif object == 4
+        gltranslate(0.0, 0.0, -1.5)
+        glucylinder(quadratic, 1.0, 0.2, 3.0, 32, 32)
+    elseif object == 5
+        part1 +=p1
+        part2 +=p2
 
-            x_m = sector1[face,2,1]
-            y_m = sector1[face,2,2]
-            z_m = sector1[face,2,3]
-            u_m = sector1[face,2,4]
-            v_m = sector1[face,2,5]
-            gltexcoord(u_m,v_m) 
-            glvertex(x_m,y_m,z_m)
+        if part1 > 359
+            p1    = 0
+            part1 = 0
+            p2    = 1
+            part2 = 0
+        end
 
-            x_m = sector1[face,3,1]
-            y_m = sector1[face,3,2]
-            z_m = sector1[face,3,3]
-            u_m = sector1[face,3,4]
-            v_m = sector1[face,3,5]
-            gltexcoord(u_m,v_m)
-            glvertex(x_m,y_m,z_m)
-        glend()
+        if part2 > 359
+            p1 = 1
+            p2 = 0
+        end
+        glupartialdisk(quadratic,0.5,1.5,32,32,part1,part2-part1)
     end
+
+    xrot +=xspeed
+    yrot +=yspeed
 
     sdl_gl_swapbuffers()
 
@@ -230,6 +266,11 @@ while true
     if keystate != prev_keystate
         if keystate[SDLK_q] == true
             break
+        elseif keystate[SDLK_SPACE] == true
+            object +=1
+            if object > 5
+                object = 0
+            end
         elseif keystate[SDLK_b] == true
             println("Blend was: $blend")
             blend = (blend ? false : true)
@@ -252,39 +293,23 @@ while true
             end
         elseif keystate[SDLK_f] == true
             println("Filter was: $filter")
-            filter +=1
+            filter += 1
             if filter > 3
                 filter = 1
             end
             println("Filter is now: $filter")
         elseif keystate[SDLK_PAGEUP] == true
-            lookupdown -=0.2
+            z -= 0.02
         elseif keystate[SDLK_PAGEDOWN] == true
-            lookupdown +=1.0
+            z += 0.02
         elseif keystate[SDLK_UP] == true
-            xpos -=sin(degrees2radians(yrot))*0.05
-            zpos -=cos(degrees2radians(yrot))*0.05
-            walkbias +=10
-            if walkbiasangle <= 359.0
-                walkbiasangle =0.0
-            else
-                walkbiasangle +=10
-            end
-            walkbias = sin(degrees2radians(walkbiasangle))/20.0
+            xspeed -= 0.01
         elseif keystate[SDLK_DOWN] == true
-            xpos +=sin(degrees2radians(yrot))*0.05
-            zpos +=cos(degrees2radians(yrot))*0.05
-            walkbias -=10
-            if walkbiasangle <= 1.0
-                walkbiasangle =359.0
-            else
-                walkbiasangle -=10
-            end
-            walkbias = sin(degrees2radians(walkbiasangle))/20.0
+            xspeed += 0.01
         elseif keystate[SDLK_LEFT] == true
-            yrot +=1.5
+            yspeed -= 0.01
         elseif keystate[SDLK_RIGHT] == true
-            yrot -=1.5
+            yspeed += 0.01
         end
         prev_keystate = keystate
     end

@@ -12,11 +12,42 @@ using SDL
 
 # initialize variables
 
-bpp            = 16
-wintitle       = "NeHe Tut 9"
-icontitle      = "NeHe Tut 9"
-width          = 640
-height         = 480
+bpp       = 16
+wintitle  = "NeHe Tut 9"
+icontitle = "NeHe Tut 9"
+width     = 640
+height    = 480
+
+STAR_NUM  = 50
+
+type star
+    r::Int  
+    g::Int
+    b::Int
+    dist::Float64
+    angle::Float64
+end
+
+tempr = randi(256)
+tempg = randi(256) 
+tempb = randi(256) 
+
+stars = [star(tempr,tempg,tempb,0.0,0.0)] # Julia doesn't like it when you try to initialize an empty array of
+                                          # a composite type and try to fill it afterwards, so we
+                                          # start with a 1-element vector and tack on values
+
+for loop = 1:STAR_NUM-1
+    tempr = randi(256)
+    tempg = randi(256)
+    tempb = randi(256)
+    stars = push(stars, star(tempr,tempg,tempb,loop/STAR_NUM*5.0,0.0))
+end # I haven't found a better way to make an array of composite types
+
+tilt           = 90.0
+zoom           = -15.0
+spin           = 0.0
+
+twinkle        = false
 
 saved_keystate = false
 
@@ -40,9 +71,8 @@ sdl_wm_setcaption(wintitle, icontitle)
 glviewport(0, 0, width, height)
 glclearcolor(0.0, 0.0, 0.0, 0.0)
 glcleardepth(1.0)			 
-gldepthfunc(GL_LESS)	 
-glenable(GL_DEPTH_TEST)
 glshademodel(GL_SMOOTH)
+glhint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
 
 glmatrixmode(GL_PROJECTION)
 glloadidentity()
@@ -50,41 +80,6 @@ glloadidentity()
 gluperspective(45.0,width/height,0.1,100.0)
 
 glmatrixmode(GL_MODELVIEW)
-
-# initialize variables
-
-const STAR_NUM      = 50
-const max_star_dist = 0.3
-const star_size     = 1.0
-
-type star
-    r::Int  
-    g::Int
-    b::Int
-    dist::Float64
-    angle::Float64
-end
-
-tempr = convert(Int,round(rand()*256))
-tempg = convert(Int,round(rand()*256))
-tempb = convert(Int,round(rand()*256))
-
-stars = [star(tempr,tempg,tempb,0*1.0/STAR_NUM*max_star_dist,0.0)] # Julia doesn't like it when you try to initialize an empty array of
-                                                         # a composite type and try to fill it afterwards, so we start with a scalar
-                                                         # and tack on values
-
-for loop = 1:STAR_NUM-1
-    tempr = convert(Int,round(rand()*256))
-    tempg = convert(Int,round(rand()*256))
-    tempb = convert(Int,round(rand()*256))
-    stars = [stars star(tempr,tempg,tempb,loop*1.0/STAR_NUM*max_star_dist,0.0)]
-end # I haven't found a better way to make an array of composite types
-
-tilt    = 90.0
-zoom    = -15.0
-spin    = 0.0
-
-twinkle = false
 
 # load textures from images
 
@@ -104,9 +99,9 @@ glteximage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 
 # enable texture mapping and alpha blending
 
-glblendfunc(GL_SRC_ALPHA, GL_ONE)
 glenable(GL_TEXTURE_2D)
 glenable(GL_BLEND)
+glblendfunc(GL_SRC_ALPHA, GL_ONE)
 
 # drawing routines
 
@@ -131,18 +126,18 @@ while true
         glrotate(-tilt,1.0,0.0,0.0)
 
         if twinkle
-
             glcolor4ub(stars[STAR_NUM - loop + 1].r,stars[STAR_NUM - loop + 1].g,stars[STAR_NUM - loop + 1].b,255)
 
             glbegin(GL_QUADS)
                 gltexcoord(0.0, 0.0)
-                glvertex(-star_size, -star_size, 0.0)
+                glvertex(-1.0, -1.0, 0.0)
                 gltexcoord(1.0, 0.0)
-                glvertex(star_size, -star_size, 0.0)
+                glvertex(1.0, -1.0, 0.0)
                 gltexcoord(1.0, 1.0)
-                glvertex(star_size, star_size, 0.0)
+                glvertex(1.0, 1.0, 0.0)
+                gltexcoord(0.0, 1.0)
+                glvertex(-1.0, 1.0, 0.0)
             glend()
-
         end
 
         # main star
@@ -152,24 +147,24 @@ while true
 
         glbegin(GL_QUADS)
             gltexcoord(0.0, 0.0)
-            glvertex(-star_size, -star_size, 0.0)
+            glvertex(-1.0, -1.0, 0.0)
             gltexcoord(1.0, 0.0)
-            glvertex(star_size, -star_size, 0.0)
+            glvertex(1.0, -1.0, 0.0)
             gltexcoord(1.0, 1.0)
-            glvertex(star_size, star_size, 0.0)
+            glvertex(1.0, 1.0, 0.0)
             gltexcoord(0.0, 1.0)
-            glvertex(-star_size, star_size, 0.0)
+            glvertex(-1.0, 1.0, 0.0)
         glend()
 
-        spin              += 0.01
-        stars[loop].angle += loop * 1.0/STAR_NUM * 1.0
-        stars[loop].dist  -= 0.01
+        spin              +=0.01
+        stars[loop].angle +=loop/STAR_NUM
+        stars[loop].dist  -=0.01
 
         if stars[loop].dist < 0.0
-            stars[loop].dist  += max_star_dist
-            stars[loop].r     = convert(Int,round(rand()*256))
-            stars[loop].g     = convert(Int,round(rand()*256))
-            stars[loop].b     = convert(Int,round(rand()*256))
+            stars[loop].dist  +=5.0
+            stars[loop].r     = randi(256)
+            stars[loop].g     = randi(256)
+            stars[loop].b     = randi(256)
         end
 
     end

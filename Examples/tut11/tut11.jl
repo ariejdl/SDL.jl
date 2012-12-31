@@ -1,6 +1,6 @@
-# Thu 08 Nov 2012 05:07:44 PM EST
+# Fri 28 Dec 2012 03:51:13 PM EST
 #
-# NeHe Tut 6 - Rotate a textured cube
+# NeHe Tut 11 - Flag Effect (Waving Texture)
 
 
 # load necessary GL/SDL routines
@@ -13,16 +13,29 @@ using SDL
 # initialize variables
 
 bpp            = 16
-wintitle       = "NeHe Tut 6"
-icontitle      = "NeHe Tut 6"
+wintitle       = "NeHe Tut 11"
+icontitle      = "NeHe Tut 11"
 width          = 640
 height         = 480
 
-xrot           = 0.0
-yrot           = 0.0
-zrot           = 0.0
+points         = Array(Float64,(45,45,3))
 
-cube_size      = 1.0
+for x=1:45
+    for y=1:45
+        points[x,y,1] = x/5-4.5
+        points[x,y,2] = y/5-4.5
+        points[x,y,3] = sin((((x/5)*40)/360)*2*pi)
+    end
+end
+
+wiggle_count   = 0
+
+xrot           = 0
+yrot           = 0
+zrot           = 0
+
+T0             = 0
+Frames         = 0
 
 saved_keystate = false
 
@@ -44,11 +57,12 @@ sdl_setvideomode(width, height, bpp, videoFlags)
 sdl_wm_setcaption(wintitle, icontitle)
 
 glviewport(0, 0, width, height)
-glclearcolor(0.0, 0.0, 0.0, 0.0)
+glclearcolor(0.0, 0.0, 0.0, 0.5)
 glcleardepth(1.0)			 
-gldepthfunc(GL_LESS)	 
+gldepthfunc(GL_LEQUAL)	 
 glenable(GL_DEPTH_TEST)
 glshademodel(GL_SMOOTH)
+glhint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
 
 glmatrixmode(GL_PROJECTION)
 glloadidentity()
@@ -57,79 +71,11 @@ gluperspective(45.0,width/height,0.1,100.0)
 
 glmatrixmode(GL_MODELVIEW)
 
-### auxiliary functions
-
-function cube(size)
-  glbegin(GL_QUADS)
-    # Front Face
-    gltexcoord(0.0, 0.0)
-    glvertex(-size, -size, size)
-    gltexcoord(1.0, 0.0)
-    glvertex(size, -size, size)
-    gltexcoord(1.0, 1.0)
-    glvertex(size, size, size)
-    gltexcoord(0.0, 1.0)
-    glvertex(-size, size, size)
-
-    # Back Face
-    gltexcoord(1.0, 0.0)
-    glvertex(-size, -size, -size)
-    gltexcoord(1.0, 1.0)
-    glvertex(-size, size, -size)
-    gltexcoord(0.0, 1.0)
-    glvertex(size, size, -size)
-    gltexcoord(0.0, 0.0)
-    glvertex(size, -size, -size)
-
-    # Top Face
-    gltexcoord(0.0, 1.0)
-    glvertex(-size, size, -size)
-    gltexcoord(0.0, 0.0)
-    glvertex(-size, size, size)
-    gltexcoord(1.0, 0.0)
-    glvertex(size, size, size)
-    gltexcoord(1.0, 1.0)
-    glvertex(size, size, -size)
-
-    # Bottom Face
-    gltexcoord(1.0, 1.0)
-    glvertex(-size, -size, -size)
-    gltexcoord(0.0, 1.0)
-    glvertex(size, -size, -size)
-    gltexcoord(0.0, 0.0)
-    glvertex(size, -size, size)
-    gltexcoord(1.0, 0.0)
-    glvertex(-size, -size, size)
-
-    # Right Face
-    gltexcoord(1.0, 0.0)
-    glvertex(size, -size, -size)
-    gltexcoord(1.0, 1.0)
-    glvertex(size, size, -size)
-    gltexcoord(0.0, 1.0)
-    glvertex(size, size, size)
-    gltexcoord(0.0, 0.0)
-    glvertex(size, -size, size)
-
-    # Left Face
-    gltexcoord(0.0, 0.0)
-    glvertex(-size, -size, -size)
-    gltexcoord(1.0, 0.0)
-    glvertex(-size, -size, size)
-    gltexcoord(1.0, 1.0)
-    glvertex(-size, size, size)
-    gltexcoord(0.0, 1.0)
-    glvertex(-size, size, -size)
-  glend()
-end
-
-### end of auxiliary functions
-
 # load textures from images
 
 tex   = Array(Uint32,1) # generating 1 texture
 
-img3D = imread(path_expand("~/.julia/SDL/Examples/tut6/NeHe.bmp"))
+img3D = imread(path_expand("~/.julia/SDL/Examples/tut11/tim.bmp"))
 w     = size(img3D,2)
 h     = size(img3D,1)
 
@@ -145,23 +91,70 @@ glteximage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 
 glenable(GL_TEXTURE_2D)
 
+# enable Polygon filling
+
+glpolygonmode(GL_BACK, GL_FILL)
+glpolygonmode(GL_FRONT, GL_LINE)
+
 # drawing routines
 
 while true
     glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glloadidentity()
 
-    gltranslate(0.0, 0.0, -5.0)
+    gltranslate(0.0, 0.0, -12.0)
 
     glrotate(xrot,1.0,0.0,0.0)
     glrotate(yrot,0.0,1.0,0.0)
     glrotate(zrot,0.0,0.0,1.0)
 
     glbindtexture(GL_TEXTURE_2D,tex[1])
-    cube(cube_size)
 
-    xrot +=0.2
-    yrot +=0.3
+    glbegin(GL_QUADS)
+        for x=1:44
+            for y=1:44
+                tex_x  = x/45
+                tex_y  = y/45
+                tex_xb = (x+1)/45
+                tex_yb = (y+1)/45
+
+                gltexcoord(tex_x, tex_y)
+                glvertex(points[x,y,1],points[x,y,2],points[x,y,3])
+                gltexcoord(tex_x, tex_yb)
+                glvertex(points[x,y+1,1],points[x,y+1,2],points[x,y+1,3])
+                gltexcoord(tex_xb, tex_yb)
+                glvertex(points[x+1,y+1,1],points[x+1,y+1,2],points[x+1,y+1,3])
+                gltexcoord(tex_xb, tex_y)
+                glvertex(points[x+1,y,1],points[x+1,y,2],points[x+1,y,3])
+            end
+        end
+    glend()
+
+    if wiggle_count == 2
+        for y=1:45
+            hold = points[1,y,3]
+            for x=1:44
+                points[x,y,3] = points[x+1,y,3]
+            end
+            points[45,y,3] = hold
+        end
+        wiggle_count = 0
+    end
+
+    wiggle_count +=1
+
+    Frames +=1
+    t = sdl_getticks()
+    if (t - T0) >= 5000
+        seconds = (t - T0)/1000
+        fps = Frames/seconds
+        println("$Frames frames in $seconds seconds = $fps")
+        T0 = t
+        Frames = 0
+    end
+
+    xrot +=0.3
+    yrot +=0.2
     zrot +=0.4
 
     sdl_gl_swapbuffers()

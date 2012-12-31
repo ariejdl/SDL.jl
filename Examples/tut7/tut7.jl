@@ -18,6 +18,22 @@ icontitle      = "NeHe Tut 7"
 width          = 640
 height         = 480
 
+filter         = 3
+light          = true
+
+xrot           = 0.0
+yrot           = 0.0
+xspeed         = 0.0
+yspeed         = 0.0
+
+z              = -5.0
+
+cube_size      = 1.0
+
+LightAmbient   = [0.5f0, 0.5f0, 0.5f0, 1.0f0]
+LightDiffuse   = [1.0f0, 1.0f0, 1.0f0, 1.0f0]
+LightPosition  = [0.0f0, 0.0f0, 2.0f0, 1.0f0]
+
 saved_keystate = false
 
 # open SDL window with an OpenGL context
@@ -125,26 +141,6 @@ end
 
 ### end of auxiliary functions
 
-# initialize variables
-
-filter         = 2
-light          = true
-
-xrot           = 0.0
-yrot           = 0.0
-xspeed         = 0.0
-yspeed         = 0.0
-
-z              = -5.0
-
-cube_size      = 1.0
-
-LightAmbient   = [0.5f0, 0.5f0, 0.5f0, 1.0f0]
-LightDiffuse   = [1.0f0, 1.0f0, 1.0f0, 1.0f0]
-LightPosition  = [0.0f0, 0.0f0, 2.0f0, 1.0f0]
-
-saved_keystate = false
-
 # load textures from images
 
 tex   = Array(Uint32,3) # generating 3 textures
@@ -197,13 +193,7 @@ while true
     glrotate(xrot,1.0,0.0,0.0)
     glrotate(yrot,0.0,1.0,0.0)
 
-    if filter == 0
-        glbindtexture(GL_TEXTURE_2D,tex[1])
-    elseif filter == 1
-        glbindtexture(GL_TEXTURE_2D,tex[2])
-    elseif filter == 2
-        glbindtexture(GL_TEXTURE_2D,tex[3])
-    end
+    glbindtexture(GL_TEXTURE_2D,tex[filter])
     cube(cube_size)
 
     xrot +=xspeed
@@ -242,8 +232,8 @@ while true
         elseif keystate[SDLK_f] == true
             println("Filter was: $filter")
             filter += 1
-            if filter > 2
-                filter = 0
+            if filter > 3
+                filter = 1
             end
             println("Filter is now: $filter")
         elseif keystate[SDLK_PAGEUP] == true
