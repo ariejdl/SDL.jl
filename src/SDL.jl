@@ -111,6 +111,15 @@ function sdl_getrelativemousestate()
 end
 export sdl_getrelativemousestate
 
+@get_c_fun sdl sdl_joystickeventstate SDL_JoystickEventState(state::Int32)::Int32
+export sdl_joystickeventstate
+@get_c_fun sdl sdl_joystickopen SDL_JoystickOpen(index::Int32)::Ptr{Void}
+export sdl_joystickopen
+@get_c_fun sdl sdl_joystickgetbutton SDL_JoystickGetButton(joystick::Ptr{Void},button::Int32)::Uint8
+export sdl_joystickgetbutton
+@get_c_fun sdl sdl_joystickgetaxis SDL_JoystickGetAxis(joystick::Ptr{Void},axis::Int32)::Int16
+export sdl_joystickgetaxis
+
 const SDL_INIT_VIDEO              = 0x00000020
 const SDL_SWSURFACE               = 0x00000000
 const SDL_HWSURFACE               = 0x00000001
