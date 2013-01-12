@@ -31,7 +31,7 @@ sdl_getvideoinfo
 sdl_gl_swapbuffers
 ```
 
-See the Examples directory for translations of sixteen NeHe tutorials into
+See the Examples/NeHe directory for translations of sixteen NeHe tutorials into
 Julia-SDL.
 
 Have fun!

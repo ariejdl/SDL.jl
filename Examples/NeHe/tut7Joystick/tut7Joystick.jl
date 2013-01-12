@@ -12,29 +12,33 @@ using SDL
 
 # initialize variables
 
-bpp           = 16
-wintitle      = "NeHe Tut 7"
-icontitle     = "NeHe Tut 7"
-width         = 640
-height        = 480
+bpp              = 16
+wintitle         = "NeHe Tut 7"
+icontitle        = "NeHe Tut 7"
+width            = 640
+height           = 480
 
-filter        = 3
-light         = true
+filter           = 3
+light            = true
 
-xrot          = 0.0
-yrot          = 0.0
-xspeed        = 0.0
-yspeed        = 0.0
-x_thresh      = 1
-y_thresh      = 1
+xrot             = 0.0
+yrot             = 0.0
+xspeed           = 0.0
+yspeed           = 0.0
+x_thresh         = 1
+y_thresh         = 1
 
-z             = -5.0
+z                = -5.0
 
-cube_size     = 1.0
+cube_size        = 1.0
 
-LightAmbient  = [0.5f0, 0.5f0, 0.5f0, 1.0f0]
-LightDiffuse  = [1.0f0, 1.0f0, 1.0f0, 1.0f0]
-LightPosition = [0.0f0, 0.0f0, 2.0f0, 1.0f0]
+LightAmbient     = [0.5f0, 0.5f0, 0.5f0, 1.0f0]
+LightDiffuse     = [1.0f0, 1.0f0, 1.0f0, 1.0f0]
+LightPosition    = [0.0f0, 0.0f0, 2.0f0, 1.0f0]
+
+keystate_checked = false
+lastkeycheckTime = 0
+key_duration     = 75
 
 # open SDL window with an OpenGL context
 
@@ -207,26 +211,38 @@ while true
     sdl_gl_swapbuffers()
 
     sdl_pumpevents()
-    keystate = sdl_getkeystate()
+    if sdl_getticks() - lastkeycheckTime >= key_duration
+        keystate         = sdl_getkeystate()
+        keystate_checked = true
+        lastkeychecktime = sdl_getticks()
+    end
 
-    if keystate[SDLK_q] == true
-        break
-    elseif keystate[SDLK_l] == true
-        println("Light was: $light")
-        light = (light ? false : true)
-        println("Light is now: $light")
-        if light
-            glenable(GL_LIGHTING)
-        else
-            gldisable(GL_LIGHTING)
+    # julia is so fast that a single key press lasts through several iterations
+    # of this loop.  this means that one press can be seen as 50 or more
+    # presses by the sdl event system, which makes the demo very bewildering.
+    # to correct for this, we only check keypresses every 100ms.
+
+    if keystate_checked == true
+        if keystate[SDLK_q] == true
+            break
+        elseif keystate[SDLK_l] == true
+            println("Light was: $light")
+            light = (light ? false : true)
+            println("Light is now: $light")
+            if light
+                glenable(GL_LIGHTING)
+            else
+                gldisable(GL_LIGHTING)
+            end
+        elseif keystate[SDLK_f] == true
+            println("Filter was: $filter")
+            filter += 1
+            if filter > 3
+                filter = 1
+            end
+            println("Filter is now: $filter")
         end
-    elseif keystate[SDLK_f] == true
-        println("Filter was: $filter")
-        filter += 1
-        if filter > 3
-            filter = 1
-        end
-        println("Filter is now: $filter")
+        keystate_checked = false
     end
 
     joy_x = sdl_joystickgetaxis(joystick, 0)

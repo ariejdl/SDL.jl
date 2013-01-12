@@ -28,16 +28,18 @@ for x=1:45
     end
 end
 
-wiggle_count   = 0
+wiggle_count     = 0
 
-xrot           = 0
-yrot           = 0
-zrot           = 0
+xrot             = 0
+yrot             = 0
+zrot             = 0
 
-T0             = 0
-Frames         = 0
+T0               = 0
+Frames           = 0
 
-saved_keystate = false
+keystate_checked = false
+lastkeycheckTime = 0
+key_duration     = 75
 
 # open SDL window with an OpenGL context
 
@@ -160,25 +162,21 @@ while true
     sdl_gl_swapbuffers()
 
     sdl_pumpevents()
-    keystate = sdl_getkeystate()
-
-    # Julia is so fast that a single key press lasts through several iterations
-    # of this loop.  This means that one press is seen as 50 or more presses by
-    # the SDL event system, which can make the demo very bewildering.  To
-    # correct this, we only check keypresses when the keyboard state has
-    # changed.  An unfortunate down-side, for instance, is that the "UP" key
-    # cannot be held to make "xspeed" increase continuosly.  One must press the
-    # "UP" button over and over to increase "xspeed" in discrete steps.
-
-    if saved_keystate == false
-        prev_keystate = keystate
-        saved_keystate = true
+    if sdl_getticks() - lastkeycheckTime >= key_duration
+        keystate         = sdl_getkeystate()
+        keystate_checked = true
+        lastkeychecktime = sdl_getticks()
     end
 
-    if keystate != prev_keystate
+    # julia is so fast that a single key press lasts through several iterations
+    # of this loop.  this means that one press can be seen as 50 or more
+    # presses by the sdl event system, which makes the demo very bewildering.
+    # to correct for this, we only check keypresses every 100ms.
+
+    if keystate_checked == true
         if keystate[SDLK_q] == true
             break
         end
-        prev_keystate = keystate
+        keystate_checked = false
     end
 end

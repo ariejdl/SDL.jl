@@ -51,7 +51,12 @@ export sdl_wm_setcaption
 export sdl_gl_setattribute
 @get_c_fun sdl sdl_quit SDL_Quit()::Void
 export sdl_quit
-@get_c_fun sdl sdl_getticks SDL_GetTicks()::Uint32
+
+#TODO: The C function returns a Uint32. While the un-commented code returns an intuitive
+#number, I'm not comfortable with specifying an invalid return type. 
+#@get_c_fun sdl sdl_getticks SDL_GetTicks()::Uint32
+#export sdl_getticks
+@get_c_fun sdl sdl_getticks SDL_GetTicks()::Int32
 export sdl_getticks
 
 #TODO: read up on the event system in SDL
