@@ -102,9 +102,9 @@ for loop = 2:MAX_PARTICLES
     particles = push!(particles, particle(active,life,fade,red,green,blue,xPos,yPos,zPos,xSpeed,ySpeed,zSpeed,xGrav,yGrav,zGrav))
 end
 
-keystate_checked = false
-lastkeycheckTime = 0
-key_repeatrate   = 75
+keystate_checked   = false
+lastkeycheckTime   = 0
+key_repeatinterval = 75 #ms
 
 # open SDL window with an OpenGL context
 
@@ -163,7 +163,7 @@ glcolor(1.0, 1.0, 1.0, 0.5)
 
 glbindtexture(GL_TEXTURE_2D,tex[1])
 
-# drawing routines
+# main drawing loop
 
 while true
     glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -231,10 +231,10 @@ while true
     sdl_gl_swapbuffers()
 
     sdl_pumpevents()
-    if sdl_getticks() - lastkeycheckTime >= key_repeatrate
+    if sdl_getticks() - lastkeycheckTime >= key_repeatinterval
         keystate         = sdl_getkeystate()
         keystate_checked = true
-        lastkeychecktime = sdl_getticks()
+        lastkeycheckTime = sdl_getticks()
     end
 
     # Sampling rates for event processing are so fast that a single key press

@@ -19,21 +19,21 @@ using SDL
 
 # initialize variables
 
-bpp              = 16
-wintitle         = "NeHe Tut 17"
-icontitle        = "NeHe Tut 17"
-width            = 640
-height           = 480
+bpp                = 16
+wintitle           = "NeHe Tut 17"
+icontitle          = "NeHe Tut 17"
+width              = 640
+height             = 480
 
-T0               = 0
-Frames           = 0
+T0                 = 0
+Frames             = 0
 
-cnt1             = 0
-cnt2             = 0
+cnt1               = 0
+cnt2               = 0
 
-keystate_checked = false
-lastkeycheckTime = 0
-key_repeatrate   = 75
+keystate_checked   = false
+lastkeycheckTime   = 0
+key_repeatinterval = 75 #ms
 
 # open SDL window with an OpenGL context
 
@@ -155,7 +155,7 @@ for loop = 1:256
     glendlist()
 end
 
-# drawing routines
+# main drawing loop
 
 while true
     glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -212,10 +212,10 @@ while true
     sdl_gl_swapbuffers()
 
     sdl_pumpevents()
-    if sdl_getticks() - lastkeycheckTime >= key_repeatrate
+    if sdl_getticks() - lastkeycheckTime >= key_repeatinterval
         keystate         = sdl_getkeystate()
         keystate_checked = true
-        lastkeychecktime = sdl_getticks()
+        lastkeycheckTime = sdl_getticks()
     end
 
     # Sampling rates for event processing are so fast that a single key press

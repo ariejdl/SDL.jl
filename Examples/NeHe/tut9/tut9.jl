@@ -46,15 +46,15 @@ for loop = 1:STAR_NUM-1
     stars = push!(stars, star(tempr,tempg,tempb,loop/STAR_NUM*5.0,0.0))
 end # I haven't found a better way to make an array of composite types
 
-tilt             = 90.0
-zoom             = -15.0
-spin             = 0.0
+tilt               = 90.0
+zoom               = -15.0
+spin               = 0.0
 
-twinkle          = false
+twinkle            = false
 
-keystate_checked = false
-lastkeycheckTime = 0
-key_repeatrate   = 75
+keystate_checked   = false
+lastkeycheckTime   = 0
+key_repeatinterval = 75 #ms
 
 # open SDL window with an OpenGL context
 
@@ -108,7 +108,7 @@ glenable(GL_TEXTURE_2D)
 glenable(GL_BLEND)
 glblendfunc(GL_SRC_ALPHA, GL_ONE)
 
-# drawing routines
+# main drawing loop
 
 while true
     glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -177,10 +177,10 @@ while true
     sdl_gl_swapbuffers()
 
     sdl_pumpevents()
-    if sdl_getticks() - lastkeycheckTime >= key_repeatrate
+    if sdl_getticks() - lastkeycheckTime >= key_repeatinterval
         keystate         = sdl_getkeystate()
         keystate_checked = true
-        lastkeychecktime = sdl_getticks()
+        lastkeycheckTime = sdl_getticks()
     end
 
     # Sampling rates for event processing are so fast that a single key press

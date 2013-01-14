@@ -28,18 +28,18 @@ for x=1:45
     end
 end
 
-wiggle_count     = 0
+wiggle_count       = 0
 
-xrot             = 0
-yrot             = 0
-zrot             = 0
+xrot               = 0
+yrot               = 0
+zrot               = 0
 
-T0               = 0
-Frames           = 0
+T0                 = 0
+Frames             = 0
 
-keystate_checked = false
-lastkeycheckTime = 0
-key_repeatrate   = 75
+keystate_checked   = false
+lastkeycheckTime   = 0
+key_repeatinterval = 75 #ms
 
 # open SDL window with an OpenGL context
 
@@ -98,7 +98,7 @@ glenable(GL_TEXTURE_2D)
 glpolygonmode(GL_BACK, GL_FILL)
 glpolygonmode(GL_FRONT, GL_LINE)
 
-# drawing routines
+# main drawing loop
 
 while true
     glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -162,10 +162,10 @@ while true
     sdl_gl_swapbuffers()
 
     sdl_pumpevents()
-    if sdl_getticks() - lastkeycheckTime >= key_repeatrate
+    if sdl_getticks() - lastkeycheckTime >= key_repeatinterval
         keystate         = sdl_getkeystate()
         keystate_checked = true
-        lastkeychecktime = sdl_getticks()
+        lastkeycheckTime = sdl_getticks()
     end
 
     # Sampling rates for event processing are so fast that a single key press

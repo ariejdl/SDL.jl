@@ -2,6 +2,12 @@
 #
 # NeHe Tut 10 - Move around in a 3D world
 #
+# NOTE: This example does not run slowly.  Rather, the key repeat rate limits
+# the speed at which the "player's" position is updated, giving the illusion of
+# a slow example.  Try lowering the key repeat interval to see it run at
+# "normal" speed.
+#
+#
 # Q - quit
 # B - turn texture alpha-blending on/off
 # L - turn lights on/off
@@ -18,33 +24,33 @@ using SDL
 
 # initialize variables
 
-bpp              = 16
-wintitle         = "NeHe Tut 10"
-icontitle        = "NeHe Tut 10"
-width            = 640
-height           = 480
+bpp                = 16
+wintitle           = "NeHe Tut 10"
+icontitle          = "NeHe Tut 10"
+width              = 640
+height             = 480
 
-walkbias         = 0.0
-walkbiasangle    = 0.0
+walkbias           = 0.0
+walkbiasangle      = 0.0
 
-lookupdown       = 0.0
+lookupdown         = 0.0
 
-xpos             = 0.0
-zpos             = 0.0
+xpos               = 0.0
+zpos               = 0.0
 
-yrot             = 0.0
+yrot               = 0.0
 
-LightAmbient     = [0.5f0, 0.5f0, 0.5f0, 1.0f0]
-LightDiffuse     = [1.0f0, 1.0f0, 1.0f0, 1.0f0]
-LightPosition    = [0.0f0, 0.0f0, 2.0f0, 1.0f0]
+LightAmbient       = [0.5f0, 0.5f0, 0.5f0, 1.0f0]
+LightDiffuse       = [1.0f0, 1.0f0, 1.0f0, 1.0f0]
+LightPosition      = [0.0f0, 0.0f0, 2.0f0, 1.0f0]
 
-filter           = 3
-light            = true
-blend            = false
+filter             = 3
+light              = true
+blend              = false
 
-keystate_checked = false
-lastkeycheckTime = 0
-key_repeatrate   = 75
+keystate_checked   = false
+lastkeycheckTime   = 0
+key_repeatinterval = 75 #ms
 
 # open SDL window with an OpenGL context
 
@@ -171,7 +177,7 @@ glenable(GL_LIGHTING)
 glenable(GL_TEXTURE_2D)
 glblendfunc(GL_SRC_ALPHA, GL_ONE)
 
-# drawing routines
+# main drawing loop
 
 while true
     glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -220,10 +226,10 @@ while true
     sdl_gl_swapbuffers()
 
     sdl_pumpevents()
-    if sdl_getticks() - lastkeycheckTime >= key_repeatrate
+    if sdl_getticks() - lastkeycheckTime >= key_repeatinterval
         keystate         = sdl_getkeystate()
         keystate_checked = true
-        lastkeychecktime = sdl_getticks()
+        lastkeycheckTime = sdl_getticks()
     end
 
     # Sampling rates for event processing are so fast that a single key press

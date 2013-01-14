@@ -18,32 +18,32 @@ using SDL
 
 # initialize variables
 
-bpp              = 16
-wintitle         = "NeHe Tut 8"
-icontitle        = "NeHe Tut 8"
-width            = 640
-height           = 480
+bpp                = 16
+wintitle           = "NeHe Tut 8"
+icontitle          = "NeHe Tut 8"
+width              = 640
+height             = 480
 
-light            = true
-blend            = true
-filter           = 3
+light              = true
+blend              = true
+filter             = 3
 
-xrot             = 0.0
-yrot             = 0.0
-xspeed           = 0.0
-yspeed           = 0.0
+xrot               = 0.0
+yrot               = 0.0
+xspeed             = 0.0
+yspeed             = 0.0
 
-z                = -5.0
+z                  = -5.0
 
-cube_size        = 1.0
+cube_size          = 1.0
 
-LightAmbient     = [0.5f0, 0.5f0, 0.5f0, 1.0f0]
-LightDiffuse     = [1.0f0, 1.0f0, 1.0f0, 1.0f0]
-LightPosition    = [0.0f0, 0.0f0, 2.0f0, 1.0f0]
+LightAmbient       = [0.5f0, 0.5f0, 0.5f0, 1.0f0]
+LightDiffuse       = [1.0f0, 1.0f0, 1.0f0, 1.0f0]
+LightPosition      = [0.0f0, 0.0f0, 2.0f0, 1.0f0]
 
-keystate_checked = false
-lastkeycheckTime = 0
-key_repeatrate   = 75
+keystate_checked   = false
+lastkeycheckTime   = 0
+key_repeatinterval = 75 #ms
 
 # open SDL window with an OpenGL context
 
@@ -197,7 +197,7 @@ glenable(GL_BLEND)
 glblendfunc(GL_SRC_ALPHA, GL_ONE)
 glcolor(1.0, 1.0, 1.0, 0.5)
 
-# drawing routines
+# main drawing loop
 
 while true
     glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -217,10 +217,10 @@ while true
     sdl_gl_swapbuffers()
 
     sdl_pumpevents()
-    if sdl_getticks() - lastkeycheckTime >= key_repeatrate
+    if sdl_getticks() - lastkeycheckTime >= key_repeatinterval
         keystate         = sdl_getkeystate()
         keystate_checked = true
-        lastkeychecktime = sdl_getticks()
+        lastkeycheckTime = sdl_getticks()
     end
 
     # Sampling rates for event processing are so fast that a single key press

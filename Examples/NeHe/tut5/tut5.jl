@@ -11,21 +11,21 @@ using SDL
 
 # initialize variables
 
-bpp              = 16
-wintitle         = "NeHe Tut 5"
-icontitle        = "NeHe Tut 5"
-width            = 640
-height           = 480
+bpp                = 16
+wintitle           = "NeHe Tut 5"
+icontitle          = "NeHe Tut 5"
+width              = 640
+height             = 480
 
-rpyr             = 0.0
-rquad            = 0.0
+rpyr               = 0.0
+rquad              = 0.0
 
-pyr_size         = 1.0
-cube_size        = 1.0
+pyr_size           = 1.0
+cube_size          = 1.0
 
-keystate_checked = false
-lastkeycheckTime = 0
-key_repeatrate   = 75
+keystate_checked   = false
+lastkeycheckTime   = 0
+key_repeatinterval = 75 #ms
 
 # open SDL window with an OpenGL context
 
@@ -58,7 +58,7 @@ gluperspective(45.0,width/height,0.1,100.0)
 
 glmatrixmode(GL_MODELVIEW)
 
-# drawing routines
+# main drawing loop
 
 while true
     glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -157,10 +157,10 @@ while true
     sdl_gl_swapbuffers()
 
     sdl_pumpevents()
-    if sdl_getticks() - lastkeycheckTime >= key_repeatrate
+    if sdl_getticks() - lastkeycheckTime >= key_repeatinterval
         keystate         = sdl_getkeystate()
         keystate_checked = true
-        lastkeychecktime = sdl_getticks()
+        lastkeycheckTime = sdl_getticks()
     end
 
     # Sampling rates for event processing are so fast that a single key press
