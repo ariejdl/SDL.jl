@@ -58,6 +58,12 @@ directory.  The joystick version is currently untested.
 yet to figure that out.  It may be a while before I return to it, since fonts
 in 3D applications aren't terribly interesting to me.)
 
+To try a NeHe example (e.g. tutorial 2), do
+
+```julia
+require("SDL/Examples/NeHe/tut2/tut2.jl")
+```
+
 Some usage quirks:
 
 - Quitting an SDL instance by 'break'ing the main draw loop ('q' can be used to
