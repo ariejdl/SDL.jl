@@ -6,10 +6,11 @@ NOTE: It is recommended that you use the proprietary drivers for your graphics
 card.  Open-source drivers produce poor performance and have caused X11 to
 crash before. 
 
-Many of the commonly used SDL functions are working, but many are still not
-fully working. (You can edit the method signatures by hand, but it is a painful
-process.  [Jasper's FFI](https://github.com/o-jasper/julia-ffi.git) will soon
-handle this automatically!)
+Many of the commonly used SDL functions are working, but most of the less
+commonly used functions are still not fully working. (You can edit the method
+signatures by hand, but it is a painful process.  [Jasper's
+FFI](https://github.com/o-jasper/julia-ffi.git) will soon handle this
+automatically!)
 
 #Installation
 
