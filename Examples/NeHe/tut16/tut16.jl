@@ -1,13 +1,19 @@
 # Sun 30 Dec 2012 01:40:30 AM EST
 #
 # NeHe Tut 16 - Implement fog (builds on tut7)
+#
+# Q - quit
+# G - change fog filter (liner, exponential, exponential-squared)
+# L - turn lights on/off
+# F - change texture filter (linear, nearest, mipmap)
+# PageUp/Down - move camera closer/further away
+# Up/Down - increase/decrease x-rotation speed
+# Left/Right - increase/decrease y-rotation speed
 
 
-# load necessary GL/SDL routines
+# load necessary GL/SDL routines and image routines for loading textures
 
-load("image")
-
-require("SDL")
+require("image")
 using SDL
 
 # initialize variables
@@ -40,7 +46,7 @@ LightPosition    = [0.0f0, 0.0f0, 2.0f0, 1.0f0]
 
 keystate_checked = false
 lastkeycheckTime = 0
-key_duration     = 75
+key_repeatrate   = 75
 
 # open SDL window with an OpenGL context
 
@@ -152,7 +158,7 @@ end
 
 tex   = Array(Uint32,3) # generating 3 textures
 
-img3D = imread(path_expand("~/.julia/SDL/Examples/tut16/crate.bmp"))
+img3D = imread(expanduser("~/.julia/SDL/Examples/tut16/crate.bmp"))
 w     = size(img3D,2)
 h     = size(img3D,1)
 
@@ -219,16 +225,16 @@ while true
     sdl_gl_swapbuffers()
 
     sdl_pumpevents()
-    if sdl_getticks() - lastkeycheckTime >= key_duration
+    if sdl_getticks() - lastkeycheckTime >= key_repeatrate
         keystate         = sdl_getkeystate()
         keystate_checked = true
         lastkeychecktime = sdl_getticks()
     end
 
-    # julia is so fast that a single key press lasts through several iterations
-    # of this loop.  this means that one press can be seen as 50 or more
-    # presses by the sdl event system, which makes the demo very bewildering.
-    # to correct for this, we only check keypresses every 100ms.
+    # Sampling rates for event processing are so fast that a single key press
+    # lasts through several iterations of this loop.  This means that one press
+    # can be seen as 50 or more presses by the SDL event system.  To correct
+    # for this, we only check keypresses every 75ms.
 
     if keystate_checked == true
         if keystate[SDLK_q] == true

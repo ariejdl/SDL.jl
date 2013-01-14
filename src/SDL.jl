@@ -1,11 +1,9 @@
 #  Jasper den Ouden 02-08-2012
 # Placed in public domain.
 
-require("OpenGL")
+using OpenGL
 require("OpenGL/src/OpenGLAux")
 require("OpenGL/src/GLU")
-require("GetC")
-using OpenGL
 using OpenGLAux
 using GLU
 

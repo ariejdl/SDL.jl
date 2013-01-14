@@ -1,13 +1,19 @@
 # Tue 13 Nov 2012 04:13:36 PM EST 
 #
 # NeHe Tut 10 - Move around in a 3D world
+#
+# Q - quit
+# B - turn texture alpha-blending on/off
+# L - turn lights on/off
+# F - change texture filter (linear, nearest, mipmap)
+# PageUp/Down - look up/down
+# Up/Down - move forward/backward
+# Left/Right - turn left/right
 
 
-# load necessary GL/SDL routines
+# load necessary GL/SDL routines and image routines for loading textures
 
-load("image")
-
-require("SDL")
+require("image")
 using SDL
 
 # initialize variables
@@ -38,7 +44,7 @@ blend            = false
 
 keystate_checked = false
 lastkeycheckTime = 0
-key_duration     = 75
+key_repeatrate   = 75
 
 # open SDL window with an OpenGL context
 
@@ -214,16 +220,16 @@ while true
     sdl_gl_swapbuffers()
 
     sdl_pumpevents()
-    if sdl_getticks() - lastkeycheckTime >= key_duration
+    if sdl_getticks() - lastkeycheckTime >= key_repeatrate
         keystate         = sdl_getkeystate()
         keystate_checked = true
         lastkeychecktime = sdl_getticks()
     end
 
-    # julia is so fast that a single key press lasts through several iterations
-    # of this loop.  this means that one press can be seen as 50 or more
-    # presses by the sdl event system, which makes the demo very bewildering.
-    # to correct for this, we only check keypresses every 100ms.
+    # Sampling rates for event processing are so fast that a single key press
+    # lasts through several iterations of this loop.  This means that one press
+    # can be seen as 50 or more presses by the SDL event system.  To correct
+    # for this, we only check keypresses every 75ms.
 
     if keystate_checked == true
         if keystate[SDLK_q] == true

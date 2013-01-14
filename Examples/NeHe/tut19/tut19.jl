@@ -1,13 +1,21 @@
 # Sun 30 Dec 2012 09:44:00 PM EST
 #
 # NeHe Tut 19 - Particle engine (triangle strips)
+#
+# Q - quit
+# L - turn lights on/off
+# F - change texture filter (linear, nearest, mipmap)
+# PageUp/Down - move camera closer/further away
+# Up/Down - increase/decrease x-rotation speed
+# Left/Right - increase/decrease y-rotation speed
+# Home/End - increase/decrease the amount of "friction" on particles
+# Enter - turn rainbow effect on/off
+# Space - step through colors for rainbow effect
 
 
-# load necessary GL/SDL routines
+# load necessary GL/SDL routines and image routines for loading textures
 
-load("image")
-
-require("SDL")
+require("image")
 using SDL
 
 # initialize variables
@@ -91,12 +99,12 @@ for loop = 2:MAX_PARTICLES
     xGrav  = 0.0                  
     yGrav  = -0.8                 
     zGrav  = 0.0
-    particles = push(particles, particle(active,life,fade,red,green,blue,xPos,yPos,zPos,xSpeed,ySpeed,zSpeed,xGrav,yGrav,zGrav))
+    particles = push!(particles, particle(active,life,fade,red,green,blue,xPos,yPos,zPos,xSpeed,ySpeed,zSpeed,xGrav,yGrav,zGrav))
 end
 
 keystate_checked = false
 lastkeycheckTime = 0
-key_duration     = 75
+key_repeatrate   = 75
 
 # open SDL window with an OpenGL context
 
@@ -134,7 +142,7 @@ glmatrixmode(GL_MODELVIEW)
 
 tex   = Array(Uint32,1) # generating 1 texture
 
-img3D = imread(path_expand("~/.julia/SDL.jl/Examples/tut19/Particle.bmp"))
+img3D = imread(expanduser("~/.julia/SDL.jl/Examples/tut19/Particle.bmp"))
 w     = size(img3D,2)
 h     = size(img3D,1)
 
@@ -223,16 +231,16 @@ while true
     sdl_gl_swapbuffers()
 
     sdl_pumpevents()
-    if sdl_getticks() - lastkeycheckTime >= key_duration
+    if sdl_getticks() - lastkeycheckTime >= key_repeatrate
         keystate         = sdl_getkeystate()
         keystate_checked = true
         lastkeychecktime = sdl_getticks()
     end
 
-    # julia is so fast that a single key press lasts through several iterations
-    # of this loop.  this means that one press can be seen as 50 or more
-    # presses by the sdl event system, which makes the demo very bewildering.
-    # to correct for this, we only check keypresses every 100ms.
+    # Sampling rates for event processing are so fast that a single key press
+    # lasts through several iterations of this loop.  This means that one press
+    # can be seen as 50 or more presses by the SDL event system.  To correct
+    # for this, we only check keypresses every 75ms.
 
     if keystate_checked == true
         if keystate[SDLK_q] == true

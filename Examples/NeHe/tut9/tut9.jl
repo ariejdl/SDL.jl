@@ -1,13 +1,16 @@
 # Tue 13 Nov 2012 04:13:36 PM EST 
 #
 # NeHe Tut 9 - Make some colored stars and play w/ alpha blending a bit more
+#
+# Q - quit
+# T - turn "twinkle" on/off
+# PageUp/Down - move camera closer/further away
+# Up/Down - increase/decrease tilt about x-axis
 
 
-# load necessary GL/SDL routines
+# load necessary GL/SDL routines and image routines for loading textures
 
-load("image")
-
-require("SDL")
+require("image")
 using SDL
 
 # initialize variables
@@ -40,7 +43,7 @@ for loop = 1:STAR_NUM-1
     tempr = randi(256)
     tempg = randi(256)
     tempb = randi(256)
-    stars = push(stars, star(tempr,tempg,tempb,loop/STAR_NUM*5.0,0.0))
+    stars = push!(stars, star(tempr,tempg,tempb,loop/STAR_NUM*5.0,0.0))
 end # I haven't found a better way to make an array of composite types
 
 tilt             = 90.0
@@ -51,7 +54,7 @@ twinkle          = false
 
 keystate_checked = false
 lastkeycheckTime = 0
-key_duration     = 75
+key_repeatrate   = 75
 
 # open SDL window with an OpenGL context
 
@@ -87,7 +90,7 @@ glmatrixmode(GL_MODELVIEW)
 
 tex   = Array(Uint32,1) # generating 1 textures
 
-img3D = imread(path_expand("~/.julia/SDL/Examples/tut9/Star.bmp"))
+img3D = imread(expanduser("~/.julia/SDL/Examples/tut9/Star.bmp"))
 w     = size(img3D,2)
 h     = size(img3D,1)
 
@@ -174,16 +177,16 @@ while true
     sdl_gl_swapbuffers()
 
     sdl_pumpevents()
-    if sdl_getticks() - lastkeycheckTime >= key_duration
+    if sdl_getticks() - lastkeycheckTime >= key_repeatrate
         keystate         = sdl_getkeystate()
         keystate_checked = true
         lastkeychecktime = sdl_getticks()
     end
 
-    # julia is so fast that a single key press lasts through several iterations
-    # of this loop.  this means that one press can be seen as 50 or more
-    # presses by the sdl event system, which makes the demo very bewildering.
-    # to correct for this, we only check keypresses every 100ms.
+    # Sampling rates for event processing are so fast that a single key press
+    # lasts through several iterations of this loop.  This means that one press
+    # can be seen as 50 or more presses by the SDL event system.  To correct
+    # for this, we only check keypresses every 75ms.
 
     if keystate_checked == true
         if keystate[SDLK_q] == true

@@ -1,11 +1,12 @@
 # Tue 23 Oct 2012 07:10:59 PM EDT
 #
 # NeHe Tut 5 - Rotate colored (rainbow) pyramid and colored (rainbow) cube
+#
+# Q - quit
 
 
 # load necessary GL/SDL routines
 
-require("SDL")
 using SDL
 
 # initialize variables
@@ -24,7 +25,7 @@ cube_size        = 1.0
 
 keystate_checked = false
 lastkeycheckTime = 0
-key_duration     = 75
+key_repeatrate   = 75
 
 # open SDL window with an OpenGL context
 
@@ -156,16 +157,16 @@ while true
     sdl_gl_swapbuffers()
 
     sdl_pumpevents()
-    if sdl_getticks() - lastkeycheckTime >= key_duration
+    if sdl_getticks() - lastkeycheckTime >= key_repeatrate
         keystate         = sdl_getkeystate()
         keystate_checked = true
         lastkeychecktime = sdl_getticks()
     end
 
-    # julia is so fast that a single key press lasts through several iterations
-    # of this loop.  this means that one press can be seen as 50 or more
-    # presses by the sdl event system, which makes the demo very bewildering.
-    # to correct for this, we only check keypresses every 100ms.
+    # Sampling rates for event processing are so fast that a single key press
+    # lasts through several iterations of this loop.  This means that one press
+    # can be seen as 50 or more presses by the SDL event system.  To correct
+    # for this, we only check keypresses every 75ms.
 
     if keystate_checked == true
         if keystate[SDLK_q] == true
