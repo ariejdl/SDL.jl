@@ -75,6 +75,9 @@ Have fun!
 
 #Loading and using images as textures
 
+NOTE: Examples with images will not work, unless you have ImageMagick installed on
+your system, since imread depends on it.
+
 1. Load the image using imread from Julia's image.jl file. (You will need to
 	 require("image") before imread will be available in the Main namespace.)
 2. Pass the image array into glimg (automatically exported when
