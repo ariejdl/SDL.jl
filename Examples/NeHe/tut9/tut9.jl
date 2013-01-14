@@ -90,7 +90,7 @@ glmatrixmode(GL_MODELVIEW)
 
 tex   = Array(Uint32,1) # generating 1 textures
 
-img3D = imread(expanduser("~/.julia/SDL/Examples/tut9/Star.bmp"))
+img3D = imread(expanduser("~/.julia/SDL/Examples/NeHe/tut9/Star.bmp"))
 w     = size(img3D,2)
 h     = size(img3D,1)
 

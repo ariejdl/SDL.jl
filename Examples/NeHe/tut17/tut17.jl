@@ -103,13 +103,13 @@ end
 
 tex       = Array(Uint32,2) # generating 2 textures
 
-img3D     = imread(expanduser("~/.julia/SDL/Examples/tut17/font.bmp"))
+img3D     = imread(expanduser("~/.julia/SDL/Examples/NeHe/tut17/font.bmp"))
 w         = size(img3D,2)
 h         = size(img3D,1)
 
 img_font  = glimg(img3D) # see OpenGLAux.jl for description
 
-img3D     = imread(expanduser("~/.julia/SDL/Examples/tut17/bumps.bmp"))
+img3D     = imread(expanduser("~/.julia/SDL/Examples/NeHe/tut17/bumps.bmp"))
 w         = size(img3D,2)
 h         = size(img3D,1)
 

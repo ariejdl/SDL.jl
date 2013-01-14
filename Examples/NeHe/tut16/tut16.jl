@@ -158,7 +158,7 @@ end
 
 tex   = Array(Uint32,3) # generating 3 textures
 
-img3D = imread(expanduser("~/.julia/SDL/Examples/tut16/crate.bmp"))
+img3D = imread(expanduser("~/.julia/SDL/Examples/NeHe/tut16/crate.bmp"))
 w     = size(img3D,2)
 h     = size(img3D,1)
 

@@ -127,13 +127,13 @@ end
 
 # initialize sector1 with SetupWorld
 
-sector1 = SetupWorld(expanduser("~/.julia/SDL/Examples/tut10/world.txt"))
+sector1 = SetupWorld(expanduser("~/.julia/SDL/Examples/NeHe/tut10/world.txt"))
 
 # load textures from images
 
 tex   = Array(Uint32,3) # generating 3 textures
 
-img3D = imread(expanduser("~/.julia/SDL/Examples/tut10/mud.bmp"))
+img3D = imread(expanduser("~/.julia/SDL/Examples/NeHe/tut10/mud.bmp"))
 w     = size(img3D,2)
 h     = size(img3D,1)
 

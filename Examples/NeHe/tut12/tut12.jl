@@ -158,7 +158,7 @@ glendlist()
 
 tex   = Array(Uint32,1) # generating 1 texture
 
-img3D = imread(expanduser("~/.julia/SDL/Examples/tut12/cube.bmp"))
+img3D = imread(expanduser("~/.julia/SDL/Examples/NeHe/tut12/cube.bmp"))
 w     = size(img3D,2)
 h     = size(img3D,1)
 
