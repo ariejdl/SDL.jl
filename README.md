@@ -19,19 +19,19 @@ your system.
 
 On Ubuntu, install the following:
 
-libsdl-1.2debian
-libsdl-1.2debian-alsa
-libsdl-image1.2
-libsdl-mixer1.2
-libsdl-net1.2
+	libsdl-1.2debian
+	libsdl-1.2debian-alsa
+	libsdl-image1.2
+	libsdl-mixer1.2
+	libsdl-net1.2
 
 On Fedora, install the following:
 
-SDL
-SDL_mixer
-SDL_sound
-SDL_image
-SDL_net
+	SDL
+	SDL_mixer
+	SDL_sound
+	SDL_image
+	SDL_net
 
 While a small subset of the functions from these packages have been
 implemented, the hope is to fully implement all of them eventually, so you
