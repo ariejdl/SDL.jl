@@ -2,10 +2,6 @@ This package is intended to be a fully fledged
 [Julia](http://www.julialang.org) interface to the SDL implementation on your
 machine.
 
-NOTE: It is recommended that you use the proprietary drivers for your graphics
-card.  Open-source drivers produce poor performance and have caused X11 to
-crash before. 
-
 Many of the commonly used SDL functions are working, but most of the less
 commonly used functions are still not fully working. (You can edit the method
 signatures by hand, but it is a painful process.  [Jasper's
@@ -19,7 +15,41 @@ Pkg.add("SDL")
 ```
 
 You will also need to install the [SDL libraries](http://www.libsdl.org) for
-your system. (For Linux users, odds are that they are already installed.)
+your system.
+
+On Ubuntu, install the following:
+
+libsdl-1.2debian
+libsdl-1.2debian-alsa
+libsdl-image1.2
+libsdl-mixer1.2
+libsdl-net1.2
+
+On Fedora, install the following:
+
+SDL
+SDL_mixer
+SDL_sound
+SDL_image
+SDL_net
+
+While a small subset of the functions from these packages have been
+implemented, the hope is to fully implement all of them eventually, so you
+might as well install the necessary packages and be prepared for future
+updates.  If you're paranoid about having unused packages on your system, then
+just install the following for the moment:
+
+Ubuntu:
+
+	libsdl-1.2debian
+
+Fedora:
+
+	SDL
+
+The internet and the SDL website seem to have instructions for Windows and
+Mac OS X, which (as always) have a more detailed (and frustrating) install
+process.
 
 NOTE: If you are on Linux, it is recommended that you use the proprietary
 drivers for your graphics card.  Open-source drivers produce poor performance
@@ -66,7 +96,7 @@ To try a NeHe example (e.g. tutorial 2), do
 require("SDL/Examples/NeHe/tut2/tut2.jl")
 ```
 
-##Some usage quirks:
+###Some usage quirks:
 
 - Quitting an SDL instance by 'break'ing the main draw loop ('q' can be used to
 quit any of the NeHe examples) will put you back in the Julia REPL, but running the
