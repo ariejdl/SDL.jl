@@ -93,7 +93,7 @@ export sdl_enablekeyrepeat
 function sdl_getkeystate()
     numkeys = Array(Int32,1)
     keystate = ccall(dlsym(sdl, :SDL_GetKeyState), Ptr{Uint8}, (Ptr{Int32}, ), numkeys)
-    keystate = bool(pointer_to_array(keystate, (1,int64(numkeys[1]))))
+    keystate = bool(pointer_to_array(keystate, (1,int32(numkeys[1]))))
     return keystate[2:end] #TODO: find a better way to solve the off-by-one indexing issue
 end
 export sdl_getkeystate
@@ -102,7 +102,7 @@ function sdl_getmousestate()
     x = Array(Int32,1)
     y = Array(Int32,1)
     button = ccall(dlsym(sdl, :SDL_GetMouseState), Uint8, (Ptr{Int32}, Ptr{Int32}), x, y)
-    return int64(x[1]), int64(y[1]), button
+    return int32(x[1]), int32(y[1]), button
 end
 export sdl_getmousestate
 
@@ -110,7 +110,7 @@ function sdl_getrelativemousestate()
     x = Array(Int32,1)
     y = Array(Int32,1)
     button = ccall(dlsym(sdl, :SDL_GetRelativeMouseState), Uint8, (Ptr{Int32}, Ptr{Int32}), x, y)
-    return int64(x[1]), int64(y[1]), button
+    return int32(x[1]), int32(y[1]), button
 end
 export sdl_getrelativemousestate
 
