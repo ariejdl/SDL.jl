@@ -195,6 +195,10 @@ for testing all of the Examples.  He found a number of bugs that prevented the
 package from running on 32-bits systems and provided some additional
 installation instructions for Ubuntu.
 
+Thanks to [Iain Dunning](https://github.com/IainNZ) for suggesting that this be
+a pure SDL package, for testing more SDL functions, and for making headway on
+Windows. 
+
 Thanks to [NeHe Productions](http://nehe.gamedev.net) for making their
 excellent tutorials, which served as a wonderful test-bed for this interface. 
 
