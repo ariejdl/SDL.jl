@@ -25,7 +25,7 @@ height    = 480
 STAR_NUM  = 50
 
 type star
-    r::Int  
+    r::Int
     g::Int
     b::Int
     dist::Float64
