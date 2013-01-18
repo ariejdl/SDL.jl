@@ -1,11 +1,6 @@
 #  Jasper den Ouden 02-08-2012
 # Placed in public domain.
 
-using OpenGL
-require("OpenGL/src/OpenGLAux")
-require("OpenGL/src/GLU")
-using OpenGLAux
-using GLU
 
 module SDL
 

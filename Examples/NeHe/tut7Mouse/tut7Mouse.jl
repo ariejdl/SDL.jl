@@ -12,6 +12,7 @@
 # load necessary GL/SDL routines and image routines for loading textures
 
 require("image")
+using OpenGL
 using SDL
 
 # initialize variables

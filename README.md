@@ -111,17 +111,17 @@ manager, which can behave unconventionaly with some windows.
 - As a followup to the above, you can use sdl_quit to quit a Julia-SDL
 instance, but this will also close your current Julia REPL session.
 
-#Loading and using images as textures
+#Loading and using images as OpenGL textures
 
 NOTE: Examples with images will not work, unless you have ImageMagick installed on
 your system, since imread depends on it.
 
 1. Load the image using imread from Julia's image.jl file. (You will need to
 	 require("image") before imread will be available in the Main namespace.)
-2. Pass the image array into glimg (automatically exported when
-	 require("OpenGL") is evaluated). OpenGL expects upside-down, 1D image arrays
-	 in an RGB format and glimg performs the necessary conversion on the 3D image
-	 arrays produced by imread.
+2. Pass the image array into glimg (automatically exported when "using OpenGL"
+	 is evaluated). OpenGL expects upside-down, 1D image arrays in an RGB format
+	 and glimg performs the necessary conversion on the 3D image arrays produced
+	 by imread.
 3. Initialize an empty array of Uint32's to contain texture identifiers.  For
 	 example, an Array(Uint32,3) should be created if you want to make three
 	 different textures.
@@ -188,6 +188,12 @@ The VAST majority of work was done by [Jasper den
 Ouden](https://github.com/o-jasper).  Without his FFI, C header parser,
 original examples, and responses to my questions, I would never have been able
 to put this into a Julia package.  All credit goes to him.
+
+Thanks to [Martin
+Giesel](http://poseidon.sunyopt.edu/Zaidi/lab_people/bPost%20Docs/giesel/page.html)
+for testing all of the Examples.  He found a number of bugs that prevented the
+package from running on 32-bits systems and provided some additional
+installation instructions for Ubuntu.
 
 Thanks to [NeHe Productions](http://nehe.gamedev.net) for making their
 excellent tutorials, which served as a wonderful test-bed for this interface. 

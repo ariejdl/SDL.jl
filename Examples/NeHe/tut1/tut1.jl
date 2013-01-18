@@ -7,6 +7,7 @@
 
 # load necessary GL/SDL routines
 
+using OpenGL
 using SDL
 
 # initialize variables
