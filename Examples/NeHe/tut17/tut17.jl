@@ -15,6 +15,7 @@
 # load necessary GL/SDL routines and image routines for loading textures
 
 require("image")
+global OpenGLver="2.1"
 using OpenGL
 using SDL
 

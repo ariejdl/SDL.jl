@@ -184,10 +184,12 @@ joystick processing) there.
 
 #Credit
 
-The VAST majority of work was done by [Jasper den
-Ouden](https://github.com/o-jasper).  Without his FFI, C header parser,
-original examples, and responses to my questions, I would never have been able
-to put this into a Julia package.  All credit goes to him.
+All of the original, foundational work was done by [Jasper den
+Ouden](https://github.com/o-jasper).  He produced the original
+Julia-SDL files and wrote the necessary code for integrating them
+into the Julia environment.  Without his FFI, C header parser, original
+examples, and responses to my questions, I would never have been able to
+put this into a Julia package.  All credit goes to him.
 
 Thanks to [Martin
 Giesel](http://poseidon.sunyopt.edu/Zaidi/lab_people/bPost%20Docs/giesel/page.html)
