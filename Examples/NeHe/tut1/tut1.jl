@@ -7,7 +7,7 @@
 
 # load necessary GL/SDL routines
 
-global OpenGLver="2.1"
+global OpenGLver="1.0"
 using OpenGL
 using SDL
 
