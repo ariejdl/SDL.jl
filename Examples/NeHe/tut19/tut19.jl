@@ -15,8 +15,8 @@
 
 # load necessary GL/SDL routines and image routines for loading textures
 
-require("image")
 global OpenGLver="2.1"
+using Images
 using OpenGL
 using SDL
 
@@ -70,8 +70,8 @@ type particle
 end
 
 particles = [particle(true,                   # Julia doesn't like it when you try to initialize an empty array of
-                      1.0,                    # a composite type and try to fill it afterwards, so we             
-                      randi(100)/1000+0.003,  # start with a 1-element vector and tack on values                  
+                      1.0,                    # a composite type and try to fill it afterwards, so we
+                      randi(100)/1000+0.003,  # start with a 1-element vector and tack on values
                       colors[1,1],
                       colors[1,2],
                       colors[1,3],
@@ -87,19 +87,19 @@ particles = [particle(true,                   # Julia doesn't like it when you t
 
 for loop = 2:MAX_PARTICLES
     active = true
-    life   = 1.0                              
+    life   = 1.0
     fade   = randi(100)/1000+0.003
     red    = colors[loop%size(colors,1)+1,1]
     green  = colors[loop%size(colors,1)+1,2]
     blue   = colors[loop%size(colors,1)+1,3]
     xPos   = 0.0
-    yPos   = 0.0            
-    zPos   = 0.0            
+    yPos   = 0.0
+    zPos   = 0.0
     xSpeed = (randi(50)-26.0)*10.0
-    ySpeed = (randi(50)-26.0)*10.0            
+    ySpeed = (randi(50)-26.0)*10.0
     zSpeed = (randi(50)-26.0)*10.0
-    xGrav  = 0.0                  
-    yGrav  = -0.8                 
+    xGrav  = 0.0
+    yGrav  = -0.8
     zGrav  = 0.0
     particles = push!(particles, particle(active,life,fade,red,green,blue,xPos,yPos,zPos,xSpeed,ySpeed,zSpeed,xGrav,yGrav,zGrav))
 end
@@ -127,7 +127,7 @@ sdl_wm_setcaption(wintitle, icontitle)
 
 glviewport(0, 0, width, height)
 glclearcolor(0.0, 0.0, 0.0, 0.0)
-glcleardepth(1.0)			 
+glcleardepth(1.0)
 gldisable(GL_DEPTH_TEST)
 glshademodel(GL_SMOOTH)
 glhint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)

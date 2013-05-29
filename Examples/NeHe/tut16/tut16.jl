@@ -13,8 +13,8 @@
 
 # load necessary GL/SDL routines and image routines for loading textures
 
-require("image")
 global OpenGLver="2.1"
+using Images
 using OpenGL
 using SDL
 
@@ -69,8 +69,8 @@ sdl_wm_setcaption(wintitle, icontitle)
 
 glviewport(0, 0, width, height)
 glclearcolor(0.5, 0.5, 0.5, 1.0)
-glcleardepth(1.0)			 
-gldepthfunc(GL_LEQUAL)	 
+glcleardepth(1.0)
+gldepthfunc(GL_LEQUAL)
 glenable(GL_DEPTH_TEST)
 glshademodel(GL_SMOOTH)
 glhint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)

@@ -7,10 +7,10 @@
 # Left/Right - increase/decrease rotation of each cube about it's own y-axis
 
 
-# load necessary GL/SDL routines and image routines for loading textures  
+# load necessary GL/SDL routines and image routines for loading textures
 
-require("image")
 global OpenGLver="2.1"
+using Images
 using OpenGL
 using SDL
 
@@ -63,15 +63,15 @@ sdl_wm_setcaption(wintitle, icontitle)
 
 glviewport(0, 0, width, height)
 glclearcolor(0.0, 0.0, 0.0, 0.5)
-glcleardepth(1.0)			 
-gldepthfunc(GL_LEQUAL)	 
+glcleardepth(1.0)
+gldepthfunc(GL_LEQUAL)
 glenable(GL_DEPTH_TEST)
 glshademodel(GL_SMOOTH)
 glhint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
 
 #enable simple lighting
 
-glenable(GL_LIGHT0)         
+glenable(GL_LIGHT0)
 glenable(GL_LIGHTING)
 glenable(GL_COLOR_MATERIAL)
 
@@ -194,10 +194,10 @@ while true
             glrotate(45.0+yrot, 0.0, 1.0, 0.0)
 
             glcolor(boxcol[yloop,:])
-            glcalllist(box)         
-            
+            glcalllist(box)
+
             glcolor(topcol[yloop,:])
-            glcalllist(top)        
+            glcalllist(top)
         end
     end
 

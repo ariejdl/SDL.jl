@@ -1,4 +1,4 @@
-# Tue 13 Nov 2012 04:13:36 PM EST 
+# Tue 13 Nov 2012 04:13:36 PM EST
 #
 # NeHe Tut 10 - Move around in a 3D world
 #
@@ -19,8 +19,8 @@
 
 # load necessary GL/SDL routines and image routines for loading textures
 
-require("image")
 global OpenGLver="2.1"
+using Images
 using OpenGL
 using SDL
 
@@ -73,8 +73,8 @@ sdl_wm_setcaption(wintitle, icontitle)
 
 glviewport(0, 0, width, height)
 glclearcolor(0.0, 0.0, 0.0, 0.0)
-glcleardepth(1.0)			 
-gldepthfunc(GL_LESS)	 
+glcleardepth(1.0)
+gldepthfunc(GL_LESS)
 glenable(GL_DEPTH_TEST)
 glshademodel(GL_SMOOTH)
 
@@ -106,7 +106,7 @@ function SetupWorld(world_map::String)
     loop = 1
     vert = 1
     line = 1
-    
+
     while line <= length(world_data)-2
         if world_data[2+line][1] != '/' && world_data[2+line][1] != '\n'
             while vert <= 3
@@ -204,7 +204,7 @@ while true
             z_m = sector1[face,1,3]
             u_m = sector1[face,1,4]
             v_m = sector1[face,1,5]
-            gltexcoord(u_m,v_m) 
+            gltexcoord(u_m,v_m)
             glvertex(x_m,y_m,z_m)
 
             x_m = sector1[face,2,1]
@@ -212,7 +212,7 @@ while true
             z_m = sector1[face,2,3]
             u_m = sector1[face,2,4]
             v_m = sector1[face,2,5]
-            gltexcoord(u_m,v_m) 
+            gltexcoord(u_m,v_m)
             glvertex(x_m,y_m,z_m)
 
             x_m = sector1[face,3,1]

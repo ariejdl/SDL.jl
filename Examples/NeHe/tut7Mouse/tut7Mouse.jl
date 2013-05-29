@@ -11,8 +11,8 @@
 
 # load necessary GL/SDL routines and image routines for loading textures
 
-require("image")
 global OpenGLver="2.1"
+using Images
 using OpenGL
 using SDL
 
@@ -65,8 +65,8 @@ sdl_wm_setcaption(wintitle, icontitle)
 
 glviewport(0, 0, width, height)
 glclearcolor(0.0, 0.0, 0.0, 0.0)
-glcleardepth(1.0)			 
-gldepthfunc(GL_LESS)	 
+glcleardepth(1.0)
+gldepthfunc(GL_LESS)
 glenable(GL_DEPTH_TEST)
 glshademodel(GL_SMOOTH)
 
@@ -262,7 +262,7 @@ while true
         elseif (mouse_y - prev_y) < -y_thresh
             xspeed += 0.01
         end
-    elseif button == SDL_BUTTON_MIDDLE 
+    elseif button == SDL_BUTTON_MIDDLE
         println("Middle button pressed at ($mouse_x, $mouse_y).")
         if (mouse_y - prev_y) > y_thresh
             z -= 0.02

@@ -9,13 +9,13 @@
 # Up/Down - increase/decrease x-rotation speed
 # Left/Right - increase/decrease y-rotation speed
 
-# TODO: This example runs, but it produces a very glitchy output. 
+# TODO: This example runs, but it produces a very glitchy output.
 
 
 # load necessary GL/SDL routines and image routines for loading textures
 
-require("image")
 global OpenGLver="2.1"
+using Images
 using OpenGL
 using SDL
 
@@ -56,8 +56,8 @@ sdl_wm_setcaption(wintitle, icontitle)
 
 glviewport(0, 0, width, height)
 glclearcolor(0.0, 0.0, 0.0, 0.0)
-glcleardepth(1.0)			 
-gldepthfunc(GL_LEQUAL)	 
+glcleardepth(1.0)
+gldepthfunc(GL_LEQUAL)
 glshademodel(GL_SMOOTH)
 glenable(GL_DEPTH_TEST)
 
@@ -91,10 +91,10 @@ function glprint(x::Integer, y::Integer, string::String, set::Integer)
     gltranslate(x, y, 0)
     gllistbase(uint32(base-32+(128*set)))
     glcalllists(strlen(string), GL_BYTE, string)
-    
+
     glmatrixmode(GL_PROJECTION)
     glpopmatrix()
-    
+
     glmatrixmode(GL_MODELVIEW)
     glpopmatrix()
 end
@@ -171,7 +171,7 @@ while true
 
     gldisable(GL_BLEND)
     glcolor(1.0, 1.0, 1.0)
-    
+
     glbegin(GL_QUADS)
         gltexcoord(0.0, 0.0)
         glvertex(-1.0, 1.0)

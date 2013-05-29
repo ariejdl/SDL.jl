@@ -1,4 +1,4 @@
-# Tue 13 Nov 2012 04:13:36 PM EST 
+# Tue 13 Nov 2012 04:13:36 PM EST
 #
 # NeHe Tut 9 - Make some colored stars and play w/ alpha blending a bit more
 #
@@ -10,8 +10,8 @@
 
 # load necessary GL/SDL routines and image routines for loading textures
 
-require("image")
 global OpenGLver="2.1"
+using Images
 using OpenGL
 using SDL
 
@@ -34,8 +34,8 @@ type star
 end
 
 tempr = randi(256)
-tempg = randi(256) 
-tempb = randi(256) 
+tempg = randi(256)
+tempb = randi(256)
 
 stars = [star(tempr,tempg,tempb,0.0,0.0)] # Julia doesn't like it when you try to initialize an empty array of
                                           # a composite type and try to fill it afterwards, so we
@@ -77,7 +77,7 @@ sdl_wm_setcaption(wintitle, icontitle)
 
 glviewport(0, 0, width, height)
 glclearcolor(0.0, 0.0, 0.0, 0.0)
-glcleardepth(1.0)			 
+glcleardepth(1.0)
 glshademodel(GL_SMOOTH)
 glhint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
 

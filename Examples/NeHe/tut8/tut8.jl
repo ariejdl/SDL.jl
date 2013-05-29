@@ -1,4 +1,4 @@
-# Tue 13 Nov 2012 04:13:36 PM EST 
+# Tue 13 Nov 2012 04:13:36 PM EST
 #
 # NeHe Tut 8 - Implement lights and rotate an alpha-blended, textured cube
 #
@@ -13,8 +13,8 @@
 
 # load necessary GL/SDL routines and image routines for loading textures
 
-require("image")
 global OpenGLver="2.1"
+using Images
 using OpenGL
 using SDL
 
@@ -66,8 +66,8 @@ sdl_wm_setcaption(wintitle, icontitle)
 
 glviewport(0, 0, width, height)
 glclearcolor(0.0, 0.0, 0.0, 0.0)
-glcleardepth(1.0)			 
-gldepthfunc(GL_LESS)	 
+glcleardepth(1.0)
+gldepthfunc(GL_LESS)
 glenable(GL_DEPTH_TEST)
 glshademodel(GL_SMOOTH)
 
