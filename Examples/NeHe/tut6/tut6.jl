@@ -137,7 +137,7 @@ img3D = imread(expanduser("~/.julia/SDL/Examples/NeHe/tut6/NeHe.bmp"))
 w     = size(img3D.data,3)
 h     = size(img3D.data,2)
 
-img   = glimg(img3D) # see OpenGLAux.jl for description
+img   = glimg(img3D.data) # see OpenGLAux.jl for description
 
 glgentextures(1,tex)
 glbindtexture(GL_TEXTURE_2D,tex[1])
