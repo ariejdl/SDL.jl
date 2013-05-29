@@ -7,7 +7,7 @@
 
 # load necessary GL/SDL routines
 
-global OpenGLver="2.1"
+global OpenGLver="1.0"
 using OpenGL
 using SDL
 
@@ -45,8 +45,8 @@ sdl_wm_setcaption(wintitle, icontitle)
 
 glviewport(0, 0, width, height)
 glclearcolor(0.0, 0.0, 0.0, 0.0)
-glcleardepth(1.0)			 
-gldepthfunc(GL_LESS)	 
+glcleardepth(1.0)
+gldepthfunc(GL_LESS)
 glenable(GL_DEPTH_TEST)
 glshademodel(GL_SMOOTH)
 

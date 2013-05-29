@@ -14,8 +14,7 @@
 
 # load necessary GL/SDL routines and image routines for loading textures
 
-global OpenGLver="2.1"
-using Images
+global OpenGLver="1.0"
 using OpenGL
 using SDL
 
@@ -105,17 +104,9 @@ end
 
 tex       = Array(Uint32,2) # generating 2 textures
 
-img3D     = imread(expanduser("~/.julia/SDL/Examples/NeHe/tut17/font.bmp"))
-w         = size(img3D,2)
-h         = size(img3D,1)
+img, w, h = glimread(expanduser("~/.julia/SDL/Examples/NeHe/tut17/font.bmp"))
 
-img_font  = glimg(img3D) # see OpenGLAux.jl for description
-
-img3D     = imread(expanduser("~/.julia/SDL/Examples/NeHe/tut17/bumps.bmp"))
-w         = size(img3D,2)
-h         = size(img3D,1)
-
-img_bumps = glimg(img3D) # see OpenGLAux.jl for description
+img, w, h = glimread(expanduser("~/.julia/SDL/Examples/NeHe/tut17/bumps.bmp"))
 
 glgentextures(2,tex)
 glbindtexture(GL_TEXTURE_2D,tex[1])

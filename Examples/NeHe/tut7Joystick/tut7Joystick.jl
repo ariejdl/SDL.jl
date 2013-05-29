@@ -12,8 +12,7 @@
 
 # load necessary GL/SDL routines and image routines for loading textures
 
-global OpenGLver="2.1"
-using Images
+global OpenGLver="1.0"
 using OpenGL
 using SDL
 
@@ -161,11 +160,7 @@ end
 
 tex   = Array(Uint32,3) # generating 3 textures
 
-img3D = imread(expanduser("~/.julia/SDL/Examples/NeHe/tut7/crate.bmp"))
-w     = size(img3D,2)
-h     = size(img3D,1)
-
-img   = glimg(img3D) # see OpenGLAux.jl for description
+img, w, h = glimread(expanduser("~/.julia/SDL/Examples/NeHe/tut7/crate.bmp")) # see OpenGLAux.jl for description
 
 glgentextures(3,tex)
 glbindtexture(GL_TEXTURE_2D,tex[1])

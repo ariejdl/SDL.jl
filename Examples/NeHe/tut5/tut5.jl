@@ -7,7 +7,7 @@
 
 # load necessary GL/SDL routines
 
-global OpenGLver="2.1"
+global OpenGLver="1.0"
 using OpenGL
 using SDL
 
@@ -48,8 +48,8 @@ sdl_wm_setcaption(wintitle, icontitle)
 
 glviewport(0, 0, width, height)
 glclearcolor(0.0, 0.0, 0.0, 0.0)
-glcleardepth(1.0)			 
-gldepthfunc(GL_LESS)	 
+glcleardepth(1.0)
+gldepthfunc(GL_LESS)
 glenable(GL_DEPTH_TEST)
 glshademodel(GL_SMOOTH)
 
@@ -111,50 +111,50 @@ while true
     glcolor(0.5,0.5,1.0)
     glbegin(GL_QUADS)
         # top of cube
-        glcolor(0.0,1.0,0.0)		 
-        glvertex( cube_size, cube_size,-cube_size) 
-        glvertex(-cube_size, cube_size,-cube_size) 
-        glvertex(-cube_size, cube_size, cube_size) 
-        glvertex( cube_size, cube_size, cube_size) 
+        glcolor(0.0,1.0,0.0)
+        glvertex( cube_size, cube_size,-cube_size)
+        glvertex(-cube_size, cube_size,-cube_size)
+        glvertex(-cube_size, cube_size, cube_size)
+        glvertex( cube_size, cube_size, cube_size)
 
         # bottom of cube
-        glcolor(1.0,0.5,0.0)		 
-        glvertex( cube_size,-cube_size, cube_size) 
-        glvertex(-cube_size,-cube_size, cube_size) 
-        glvertex(-cube_size,-cube_size,-cube_size) 
-        glvertex( cube_size,-cube_size,-cube_size) 
+        glcolor(1.0,0.5,0.0)
+        glvertex( cube_size,-cube_size, cube_size)
+        glvertex(-cube_size,-cube_size, cube_size)
+        glvertex(-cube_size,-cube_size,-cube_size)
+        glvertex( cube_size,-cube_size,-cube_size)
 
         # front of cube
-        glcolor(1.0,0.0,0.0)		 
-        glvertex( cube_size, cube_size, cube_size) 
-        glvertex(-cube_size, cube_size, cube_size) 
-        glvertex(-cube_size,-cube_size, cube_size) 
-        glvertex( cube_size,-cube_size, cube_size) 
+        glcolor(1.0,0.0,0.0)
+        glvertex( cube_size, cube_size, cube_size)
+        glvertex(-cube_size, cube_size, cube_size)
+        glvertex(-cube_size,-cube_size, cube_size)
+        glvertex( cube_size,-cube_size, cube_size)
 
         # back of cube.
-        glcolor(1.0,1.0,0.0)		 
-        glvertex( cube_size,-cube_size,-cube_size) 
-        glvertex(-cube_size,-cube_size,-cube_size) 
-        glvertex(-cube_size, cube_size,-cube_size) 
-        glvertex( cube_size, cube_size,-cube_size) 
+        glcolor(1.0,1.0,0.0)
+        glvertex( cube_size,-cube_size,-cube_size)
+        glvertex(-cube_size,-cube_size,-cube_size)
+        glvertex(-cube_size, cube_size,-cube_size)
+        glvertex( cube_size, cube_size,-cube_size)
 
         # left of cube
-        glcolor(0.0,0.0,1.0)		 
-        glvertex(-cube_size, cube_size, cube_size) 
-        glvertex(-cube_size, cube_size,-cube_size) 
-        glvertex(-cube_size,-cube_size,-cube_size) 
-        glvertex(-cube_size,-cube_size, cube_size) 
+        glcolor(0.0,0.0,1.0)
+        glvertex(-cube_size, cube_size, cube_size)
+        glvertex(-cube_size, cube_size,-cube_size)
+        glvertex(-cube_size,-cube_size,-cube_size)
+        glvertex(-cube_size,-cube_size, cube_size)
 
         # Right of cube
-        glcolor(1.0,0.0,1.0)		 
-        glvertex( cube_size, cube_size,-cube_size) 
-        glvertex( cube_size, cube_size, cube_size) 
-        glvertex( cube_size,-cube_size, cube_size) 
-        glvertex( cube_size,-cube_size,-cube_size) 
+        glcolor(1.0,0.0,1.0)
+        glvertex( cube_size, cube_size,-cube_size)
+        glvertex( cube_size, cube_size, cube_size)
+        glvertex( cube_size,-cube_size, cube_size)
+        glvertex( cube_size,-cube_size,-cube_size)
     glend()
 
     rpyr  +=0.2
-    rquad -=0.2					
+    rquad -=0.2
 
     sdl_gl_swapbuffers()
 
