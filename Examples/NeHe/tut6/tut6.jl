@@ -134,7 +134,7 @@ end
 tex   = Array(Uint32,1) # generating 1 texture
 
 #img3D = imread(expanduser("~/.julia/SDL/Examples/NeHe/tut6/NeHe.bmp"))
-img = glimread(expanduser("~/.julia/SDL/Examples/NeHe/tut6/NeHe.bmp"))
+img, w, h = glimread(expanduser("~/.julia/SDL/Examples/NeHe/tut6/NeHe.bmp"))
 #w     = size(img3D.data,3)
 #h     = size(img3D.data,2)
 
