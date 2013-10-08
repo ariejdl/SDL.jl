@@ -38,8 +38,8 @@ key_repeatinterval = 75 #ms
 
 # open SDL window with an OpenGL context
 
-sdl_init(SDL_INIT_VIDEO)
-#videoInfo = sdl_getvideoinfo()
+SDL_Init(SDL_INIT_VIDEO)
+#videoInfo = SDL_GetVideoInfo()
 videoFlags = (SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE | SDL_RESIZABLE)
 #if videoInfo.hw_available
     videoFlags = (videoFlags | SDL_HWSURFACE)
@@ -49,53 +49,53 @@ videoFlags = (SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE | SDL_RESIZABLE)
 #if videoInfo.blit_hw
     videoFlags = (videoFlags | SDL_HWACCEL)
 #end
-sdl_gl_setattribute(SDL_GL_DOUBLEBUFFER, 1)
-sdl_setvideomode(width, height, bpp, videoFlags)
-sdl_wm_setcaption(wintitle, icontitle)
+SDL_gl_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
+SDL_SetVideoMode(width, height, bpp, videoFlags)
+SDL_wm_SetCaption(wintitle, icontitle)
 
-glviewport(0, 0, width, height)
-glclearcolor(0.0, 0.0, 0.0, 0.0)
-glcleardepth(1.0)
-gldepthfunc(GL_LEQUAL)
-glshademodel(GL_SMOOTH)
-glenable(GL_DEPTH_TEST)
+glViewPort(0, 0, width, height)
+glClearColor(0.0, 0.0, 0.0, 0.0)
+glClearDepth(1.0)
+glDepthFunc(GL_LEQUAL)
+glShadeModel(GL_SMOOTH)
+glEnable(GL_DEPTH_TEST)
 
-glmatrixmode(GL_PROJECTION)
-glloadidentity()
+glMatrixMode(GL_PROJECTION)
+glLoadIdentity()
 
-gluperspective(45.0,width/height,0.1,100.0)
+gluPerspective(45.0,width/height,0.1,100.0)
 
-glmatrixmode(GL_MODELVIEW)
+glMatrixMode(GL_MODELVIEW)
 
 ### auxiliary functions
 
-function glprint(x::Integer, y::Integer, string::String, set::Integer)
+function glPrint(x::Integer, y::Integer, string::String, set::Integer)
     if set > 1
         set = 1
     end
 
-    glbindtexture(GL_TEXTURE_2D, tex[1])
-    gldisable(GL_DEPTH_TEST)
+    glBindTexture(GL_TEXTURE_2D, tex[1])
+    glDisable(GL_DEPTH_TEST)
 
-    glmatrixmode(GL_PROJECTION)
+    glMatrixMode(GL_PROJECTION)
     glpushmatrix()
 
-    glloadidentity()
-    glortho(0, 640, 0, 480, -1, 1)
+    glLoadIdentity()
+    glOrtho(0, 640, 0, 480, -1, 1)
 
-    glmatrixmode(GL_MODELVIEW)
-    glpushmatrix()
-    glloadidentity()
+    glMatrixMode(GL_MODELVIEW)
+    glPushMatrix()
+    glLoadIdentity()
 
-    gltranslate(x, y, 0)
-    gllistbase(uint32(base-32+(128*set)))
-    glcalllists(strlen(string), GL_BYTE, string)
+    glTranslate(x, y, 0)
+    glListBase(uint32(base-32+(128*set)))
+    glCallLists(strlen(string), GL_BYTE, string)
 
-    glmatrixmode(GL_PROJECTION)
-    glpopmatrix()
+    glMatrixMode(GL_PROJECTION)
+    glPopMatrix()
 
-    glmatrixmode(GL_MODELVIEW)
-    glpopmatrix()
+    glMatrixMode(GL_MODELVIEW)
+    glPopMatrix()
 end
 
 ### end of auxiliary functions
@@ -108,107 +108,107 @@ img, w, h = glimread(expanduser("~/.julia/SDL/Examples/NeHe/tut17/font.bmp"))
 
 img, w, h = glimread(expanduser("~/.julia/SDL/Examples/NeHe/tut17/bumps.bmp"))
 
-glgentextures(2,tex)
-glbindtexture(GL_TEXTURE_2D,tex[1])
-gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-glteximage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img_font)
+glGenTextures(2,tex)
+glBindTexture(GL_TEXTURE_2D,tex[1])
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+glTexImage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img_font)
 
-glbindtexture(GL_TEXTURE_2D,tex[2])
-gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-glteximage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img_bumps)
+glBindTexture(GL_TEXTURE_2D,tex[2])
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+glTexImage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img_bumps)
 
 # enable texture mapping & blending
 
-glenable(GL_TEXTURE_2D)
-glblendfunc(GL_SRC_ALPHA, GL_ONE)
+glEnable(GL_TEXTURE_2D)
+glBlendFunc(GL_SRC_ALPHA, GL_ONE)
 
 # build the fonts
 
-base = glgenlists(256)
-glbindtexture(GL_TEXTURE_2D, tex[1])
+base = glGenLists(256)
+glBindTexture(GL_TEXTURE_2D, tex[1])
 
 for loop = 1:256
     cx = (loop%16)/16
     cy = (loop/16)/16
 
-    glnewlist(uint32(base+(loop-1)), GL_COMPILE)
-        glbegin(GL_QUADS)
-            gltexcoord(cx, 1-cy-0.0625)
-            glvertex(0, 0)
-            gltexcoord(cx+0.0625, 1-cy-0.0625)
-            glvertex(16, 0)
-            gltexcoord(cx+0.0625, 1-cy)
-            glvertex(16, 16)
-            gltexcoord(cx, 1-cy)
-            glvertex(0, 16)
-        glend()
-        gltranslate(10, 0, 0)
-    glendlist()
+    glNewList(uint32(base+(loop-1)), GL_COMPILE)
+        glBegin(GL_QUADS)
+            glTexCoord(cx, 1-cy-0.0625)
+            glVertex(0, 0)
+            glTexCoord(cx+0.0625, 1-cy-0.0625)
+            glVertex(16, 0)
+            glTexCoord(cx+0.0625, 1-cy)
+            glVertex(16, 16)
+            glTexCoord(cx, 1-cy)
+            glVertex(0, 16)
+        glEnd()
+        glTranslate(10, 0, 0)
+    glEndlist()
 end
 
 # main drawing loop
 
 while true
-    glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glloadidentity()
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glLoadIdentity()
 
-    glbindtexture(GL_TEXTURE_2D,tex[2])
+    glBindTexture(GL_TEXTURE_2D,tex[2])
 
-    gltranslate(0.0,0.0,-5.0)
-    glrotate(45.0, 0.0, 0.0, 1.0)
-    glrotate(cnt1*30.0, 1.0, 1.0, 0.0)
+    glTranslate(0.0,0.0,-5.0)
+    glRotate(45.0, 0.0, 0.0, 1.0)
+    glRotate(cnt1*30.0, 1.0, 1.0, 0.0)
 
-    gldisable(GL_BLEND)
-    glcolor(1.0, 1.0, 1.0)
+    glDisable(GL_BLEND)
+    glColor(1.0, 1.0, 1.0)
 
-    glbegin(GL_QUADS)
-        gltexcoord(0.0, 0.0)
-        glvertex(-1.0, 1.0)
-        gltexcoord(1.0, 0.0)
-        glvertex(1.0, 1.0)
-        gltexcoord(1.0, 1.0)
-        glvertex(1.0, -1.0)
-        gltexcoord(0.0, 1.0)
-        glvertex(-1.0, -1.0)
-    glend()
+    glBegin(GL_QUADS)
+        glTexCoord(0.0, 0.0)
+        glVertex(-1.0, 1.0)
+        glTexCoord(1.0, 0.0)
+        glVertex(1.0, 1.0)
+        glTexCoord(1.0, 1.0)
+        glVertex(1.0, -1.0)
+        glTexCoord(0.0, 1.0)
+        glVertex(-1.0, -1.0)
+    glEnd()
 
-    glrotate(90.0, 1.0, 1.0, 0.0)
-    glbegin(GL_QUADS)
-        gltexcoord(0.0, 0.0)
-        glvertex(-1.0, 1.0)
-        gltexcoord(1.0, 0.0)
-        glvertex(1.0, 1.0)
-        gltexcoord(1.0, 1.0)
-        glvertex(1.0, -1.0)
-        gltexcoord(0.0, 1.0)
-        glvertex(-1.0, -1.0)
-    glend()
+    glRotate(90.0, 1.0, 1.0, 0.0)
+    glBegin(GL_QUADS)
+        glTexCoord(0.0, 0.0)
+        glVertex(-1.0, 1.0)
+        glTexCoord(1.0, 0.0)
+        glVertex(1.0, 1.0)
+        glTexCoord(1.0, 1.0)
+        glVertex(1.0, -1.0)
+        glTexCoord(0.0, 1.0)
+        glVertex(-1.0, -1.0)
+    glEnd()
 
-    glenable(GL_BLEND)
-    glloadidentity()
+    glEnable(GL_BLEND)
+    glLoadIdentity()
 
-    glcolor(1.0cos(cnt1), 1.0sin(cnt2), 1.0-0.5cos(cnt1+cnt2))
-    glprint(int(280+250cos(cnt1)), int(235+200sin(cnt2)), "NeHe", 0)
-    glcolor(1.0sin(cnt2), 1.0-0.5cos(cnt1+cnt2), 1.0cos(cnt1))
-    glprint(int(280+230cos(cnt2)), int(235+200sin(cnt1)), "OpenGL", 1)
+    glColor(1.0cos(cnt1), 1.0sin(cnt2), 1.0-0.5cos(cnt1+cnt2))
+    glPrint(int(280+250cos(cnt1)), int(235+200sin(cnt2)), "NeHe", 0)
+    glColor(1.0sin(cnt2), 1.0-0.5cos(cnt1+cnt2), 1.0cos(cnt1))
+    glPrint(int(280+230cos(cnt2)), int(235+200sin(cnt1)), "OpenGL", 1)
 
-    glcolor(0.0, 0.0, 1.0)
-    glprint(int(240+200cos((cnt2+cnt1)/5)), 2, "JuliaLang", 0)
-    glcolor(1.0, 1.0, 1.0)
-    glprint(int(242+200cos((cnt2+cnt1)/5)), 2, "JuliaLang", 0)
+    glColor(0.0, 0.0, 1.0)
+    glPrint(int(240+200cos((cnt2+cnt1)/5)), 2, "JuliaLang", 0)
+    glColor(1.0, 1.0, 1.0)
+    glPrint(int(242+200cos((cnt2+cnt1)/5)), 2, "JuliaLang", 0)
 
     cnt1 +=0.01
     cnt2 +=0.0081
 
-    sdl_gl_swapbuffers()
+    SDL_gl_SwapBuffers()
 
-    sdl_pumpevents()
-    if sdl_getticks() - lastkeycheckTime >= key_repeatinterval
-        keystate         = sdl_getkeystate()
+    SDL_PumpEvents()
+    if SDL_GetTicks() - lastkeycheckTime >= key_repeatinterval
+        keystate         = SDL_GetKeystate()
         keystate_checked = true
-        lastkeycheckTime = sdl_getticks()
+        lastkeycheckTime = SDL_GetTicks()
     end
 
     # Sampling rates for event processing are so fast that a single key press
@@ -218,8 +218,8 @@ while true
 
     if keystate_checked == true
         if keystate[SDLK_q] == true
-            gldeletelists(base,256)
-            gldeletetextures(2,tex)
+            glDeleteLists(base,256)
+            glDeleteTextures(2,tex)
             break
         end
         keystate_checked = false

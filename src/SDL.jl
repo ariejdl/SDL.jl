@@ -26,29 +26,29 @@ import GetC.@get_c_fun
 	#current_h::Int32
 #end
 
-@get_c_fun "libSDL" sdl_freesurface SDL_FreeSurface(ptr::Ptr{Void})::Void
-export sdl_freesurface
-@get_c_fun "libSDL" sdl_gl_swapbuffers SDL_GL_SwapBuffers()::Void
-export sdl_gl_swapbuffers
-@get_c_fun "libSDL" sdl_init SDL_Init(flags::Uint32)::Int32
-export sdl_init
-@get_c_fun "libSDL" sdl_setvideomode SDL_SetVideoMode(width::Int32,height::Int32,bpp::Int32,flags::Uint32)::Ptr{Void}
-export sdl_setvideomode
-@get_c_fun "libSDL" sdl_getvideoinfo SDL_GetVideoInfo()::Ptr{Void}
-export sdl_getvideoinfo
-@get_c_fun "libSDL" sdl_wm_setcaption SDL_WM_SetCaption(title::Ptr{Uint8},icon::Ptr{Uint8})::Int32
-export sdl_wm_setcaption
-@get_c_fun "libSDL" sdl_gl_setattribute SDL_GL_SetAttribute(attr::Uint32,value::Int32)::Void
-export sdl_gl_setattribute
-@get_c_fun "libSDL" sdl_quit SDL_Quit()::Void
-export sdl_quit
+@get_c_fun "libSDL" SDL_FreeSurface SDL_FreeSurface(ptr::Ptr{Void})::Void
+export SDL_FreeSurface
+@get_c_fun "libSDL" SDL_GL_SwapBuffers SDL_GL_SwapBuffers()::Void
+export SDL_GL_SwapBuffers
+@get_c_fun "libSDL" SDL_Init SDL_Init(flags::Uint32)::Int32
+export SDL_Init
+@get_c_fun "libSDL" SDL_SetVideoMode SDL_SetVideoMode(width::Int32,height::Int32,bpp::Int32,flags::Uint32)::Ptr{Void}
+export SDL_SetVideoMode
+@get_c_fun "libSDL" SDL_GetVideoInfo SDL_GetVideoInfo()::Ptr{Void}
+export SDL_GetVideoInfo
+@get_c_fun "libSDL" SDL_WM_SetCaption SDL_WM_SetCaption(title::Ptr{Uint8},icon::Ptr{Uint8})::Int32
+export SDL_WM_SetCaption
+@get_c_fun "libSDL" SDL_GL_SetAttribute SDL_GL_SetAttribute(attr::Uint32,value::Int32)::Void
+export SDL_GL_SetAttribute
+@get_c_fun "libSDL" SDL_Quit SDL_Quit()::Void
+export SDL_Quit
 
 #TODO: The C function returns a Uint32. While the un-commented code returns an intuitive
 #number, I'm not comfortable with specifying an invalid return type. 
 #@get_c_fun "libSDL" sdl_getticks SDL_GetTicks()::Uint32
 #export sdl_getticks
-@get_c_fun "libSDL" sdl_getticks SDL_GetTicks()::Int32
-export sdl_getticks
+@get_c_fun "libSDL" SDL_GetTicks SDL_GetTicks()::Int32
+export SDL_GetTicks
 
 #TODO: read up on the event system in SDL
 #type SDL_Event
@@ -78,10 +78,10 @@ export sdl_getticks
 #end
 #export sdl_pollevent
 
-@get_c_fun "libSDL" sdl_pumpevents SDL_PumpEvents()::Void
-export sdl_pumpevents
-@get_c_fun "libSDL" sdl_enablekeyrepeat SDL_EnableKeyRepeat(delay::Int32,interval::Int32)::Int32
-export sdl_enablekeyrepeat
+@get_c_fun "libSDL" SDL_PumpEvents SDL_PumpEvents()::Void
+export SDL_PumpEvents
+@get_c_fun "libSDL" SDL_EnableKeyRepeat SDL_EnableKeyRepeat(delay::Int32,interval::Int32)::Int32
+export SDL_EnableKeyRepeat
 
 function sdl_getkeystate()
     numkeys = Array(Int32,1)
@@ -107,14 +107,14 @@ function sdl_getrelativemousestate()
 end
 export sdl_getrelativemousestate
 
-@get_c_fun "libSDL" sdl_joystickeventstate SDL_JoystickEventState(state::Int32)::Int32
-export sdl_joystickeventstate
-@get_c_fun "libSDL" sdl_joystickopen SDL_JoystickOpen(index::Int32)::Ptr{Void}
-export sdl_joystickopen
-@get_c_fun "libSDL" sdl_joystickgetbutton SDL_JoystickGetButton(joystick::Ptr{Void},button::Int32)::Uint8
-export sdl_joystickgetbutton
-@get_c_fun "libSDL" sdl_joystickgetaxis SDL_JoystickGetAxis(joystick::Ptr{Void},axis::Int32)::Int16
-export sdl_joystickgetaxis
+@get_c_fun "libSDL" SDL_JoystickEventState SDL_JoystickEventState(state::Int32)::Int32
+export SDL_JoystickEventState
+@get_c_fun "libSDL" SDL_JoystickOpen SDL_JoystickOpen(index::Int32)::Ptr{Void}
+export SDL_JoystickOpen
+@get_c_fun "libSDL" SDL_JoystickGetButton SDL_JoystickGetButton(joystick::Ptr{Void},button::Int32)::Uint8
+export SDL_JoystickGetButton
+@get_c_fun "libSDL" SDL_JoystickGetAxis SDL_JoystickGetAxis(joystick::Ptr{Void},axis::Int32)::Int16
+export SDL_JoystickGetAxis
 
 const SDL_INIT_VIDEO              = 0x00000020
 const SDL_SWSURFACE               = 0x00000000

@@ -25,8 +25,8 @@ key_repeatinterval = 75 #ms
 
 # open SDL window with an OpenGL context
 
-sdl_init(SDL_INIT_VIDEO)
-#videoInfo = sdl_getvideoinfo()
+SDL_Init(SDL_INIT_VIDEO)
+#videoInfo = SDL_GetVideoInfo()
 videoFlags = (SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE | SDL_RESIZABLE)
 #if videoInfo.hw_available
     videoFlags = (videoFlags | SDL_HWSURFACE)
@@ -36,37 +36,37 @@ videoFlags = (SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE | SDL_RESIZABLE)
 #if videoInfo.blit_hw
     videoFlags = (videoFlags | SDL_HWACCEL)
 #end
-sdl_gl_setattribute(SDL_GL_DOUBLEBUFFER, 1)
-sdl_setvideomode(width, height, bpp, videoFlags)
-sdl_wm_setcaption(wintitle, icontitle)
+SDL_gl_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
+SDL_SetVideoMode(width, height, bpp, videoFlags)
+SDL_wm_SetCaption(wintitle, icontitle)
 
-glviewport(0, 0, width, height)
-glclearcolor(0.0, 0.0, 0.0, 0.0)
-glcleardepth(1.0)			 
-gldepthfunc(GL_LESS)	 
-glenable(GL_DEPTH_TEST)
-glshademodel(GL_SMOOTH)
+glViewPort(0, 0, width, height)
+glClearColor(0.0, 0.0, 0.0, 0.0)
+glClearDepth(1.0)			 
+glDepthFunc(GL_LESS)	 
+glEnable(GL_DEPTH_TEST)
+glShadeModel(GL_SMOOTH)
 
-glmatrixmode(GL_PROJECTION)
-glloadidentity()
+glMatrixMode(GL_PROJECTION)
+glLoadIdentity()
 
-gluperspective(45.0,width/height,0.1,100.0)
+gluPerspective(45.0,width/height,0.1,100.0)
 
-glmatrixmode(GL_MODELVIEW)
+glMatrixMode(GL_MODELVIEW)
 
 # main drawing loop
 
 while true
-    glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glloadidentity()
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glLoadIdentity()
 
-    sdl_gl_swapbuffers()
+    SDL_gl_SwapBuffers()
 
-    sdl_pumpevents()
-    if sdl_getticks() - lastkeycheckTime >= key_repeatinterval
-        keystate         = sdl_getkeystate()
+    SDL_PumpEvents()
+    if SDL_GetTicks() - lastkeycheckTime >= key_repeatinterval
+        keystate         = SDL_getkeystate()
         keystate_checked = true
-        lastkeycheckTime = sdl_getticks()
+        lastkeycheckTime = SDL_getticks()
     end
 
     # Sampling rates for event processing are so fast that a single key press

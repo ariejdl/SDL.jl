@@ -109,8 +109,8 @@ key_repeatinterval = 75 #ms
 
 # open SDL window with an OpenGL context
 
-sdl_init(SDL_INIT_VIDEO)
-#videoInfo = sdl_getvideoinfo()
+SDL_Init(SDL_INIT_VIDEO)
+#videoInfo = SDL_GetVideoInfo()
 videoFlags = (SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE | SDL_RESIZABLE)
 #if videoInfo.hw_available
     videoFlags = (videoFlags | SDL_HWSURFACE)
@@ -120,24 +120,24 @@ videoFlags = (SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE | SDL_RESIZABLE)
 #if videoInfo.blit_hw
     videoFlags = (videoFlags | SDL_HWACCEL)
 #end
-sdl_gl_setattribute(SDL_GL_DOUBLEBUFFER, 1)
-sdl_setvideomode(width, height, bpp, videoFlags)
-sdl_wm_setcaption(wintitle, icontitle)
+SDL_gl_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
+SDL_SetVideoMode(width, height, bpp, videoFlags)
+SDL_wm_SetCaption(wintitle, icontitle)
 
-glviewport(0, 0, width, height)
-glclearcolor(0.0, 0.0, 0.0, 0.0)
-glcleardepth(1.0)
-gldisable(GL_DEPTH_TEST)
-glshademodel(GL_SMOOTH)
-glhint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
-glhint(GL_POINT_SMOOTH_HINT, GL_NICEST)
+glViewPort(0, 0, width, height)
+glClearColor(0.0, 0.0, 0.0, 0.0)
+glClearDepth(1.0)
+glDisable(GL_DEPTH_TEST)
+glShadeModel(GL_SMOOTH)
+glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
+glHint(GL_POINT_SMOOTH_HINT, GL_NICEST)
 
-glmatrixmode(GL_PROJECTION)
-glloadidentity()
+glMatrixMode(GL_PROJECTION)
+glLoadIdentity()
 
-gluperspective(45.0,width/height,0.1,200.0)
+gluPerspective(45.0,width/height,0.1,200.0)
 
-glmatrixmode(GL_MODELVIEW)
+glMatrixMode(GL_MODELVIEW)
 
 # load textures from images
 
@@ -145,43 +145,43 @@ tex   = Array(Uint32,1) # generating 1 texture
 
 img, w, h = glimread(expanduser("~/.julia/SDL.jl/Examples/NeHe/tut19/Particle.bmp"))
 
-glgentextures(1,tex)
-glbindtexture(GL_TEXTURE_2D,tex[1])
-gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-glteximage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+glGenTextures(1,tex)
+glBindTexture(GL_TEXTURE_2D,tex[1])
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+glTexImage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 
 # enable texture mapping & blending
 
-glenable(GL_TEXTURE_2D)
-glenable(GL_BLEND)
-glblendfunc(GL_SRC_ALPHA, GL_ONE)
-glcolor(1.0, 1.0, 1.0, 0.5)
+glEnable(GL_TEXTURE_2D)
+glEnable(GL_BLEND)
+glBlendFunc(GL_SRC_ALPHA, GL_ONE)
+glColor(1.0, 1.0, 1.0, 0.5)
 
-glbindtexture(GL_TEXTURE_2D,tex[1])
+glBindTexture(GL_TEXTURE_2D,tex[1])
 
 # main drawing loop
 
 while true
-    glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glloadidentity()
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glLoadIdentity()
 
     for loop = 1:MAX_PARTICLES
         if particles[loop].active
             x = particles[loop].xPos
             y = particles[loop].yPos
             z = particles[loop].zPos+zoom
-            glcolor(particles[loop].red, particles[loop].green, particles[loop].blue, particles[loop].life)
-            glbegin(GL_TRIANGLE_STRIP)
-                gltexcoord(1, 1)
-                glvertex(x+0.5, y+0.5, z)
-                gltexcoord(0, 1)
-                glvertex(x-0.5, y+0.5, z)
-                gltexcoord(1, 0)
-                glvertex(x+0.5, y-0.5, z)
-                gltexcoord(0, 0)
-                glvertex(x-0.5, y-0.5, z)
-            glend()
+            glColor(particles[loop].red, particles[loop].green, particles[loop].blue, particles[loop].life)
+            glBegin(GL_TRIANGLE_STRIP)
+                glTexCoord(1, 1)
+                glVertex(x+0.5, y+0.5, z)
+                glTexCoord(0, 1)
+                glVertex(x-0.5, y+0.5, z)
+                glTexCoord(1, 0)
+                glVertex(x+0.5, y-0.5, z)
+                glTexCoord(0, 0)
+                glVertex(x-0.5, y-0.5, z)
+            glEnd()
             particles[loop].xPos   += particles[loop].xSpeed/(slowdown*1000)
             particles[loop].yPos   += particles[loop].ySpeed/(slowdown*1000)
             particles[loop].zPos   += particles[loop].zSpeed/(slowdown*1000)
@@ -225,13 +225,13 @@ while true
 
     delay +=1
 
-    sdl_gl_swapbuffers()
+    SDL_gl_SwapBuffers()
 
-    sdl_pumpevents()
-    if sdl_getticks() - lastkeycheckTime >= key_repeatinterval
-        keystate         = sdl_getkeystate()
+    SDL_PumpEvents()
+    if SDL_GetTicks() - lastkeycheckTime >= key_repeatinterval
+        keystate         = SDL_GetKeystate()
         keystate_checked = true
-        lastkeycheckTime = sdl_getticks()
+        lastkeycheckTime = SDL_GetTicks()
     end
 
     # Sampling rates for event processing are so fast that a single key press

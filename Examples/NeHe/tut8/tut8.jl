@@ -48,8 +48,8 @@ key_repeatinterval = 75 #ms
 
 # open SDL window with an OpenGL context
 
-sdl_init(SDL_INIT_VIDEO)
-#videoInfo = sdl_getvideoinfo()
+SDL_Init(SDL_INIT_VIDEO)
+#videoInfo = SDL_GetVideoInfo()
 videoFlags = (SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE | SDL_RESIZABLE)
 #if videoInfo.hw_available
     videoFlags = (videoFlags | SDL_HWSURFACE)
@@ -59,94 +59,94 @@ videoFlags = (SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE | SDL_RESIZABLE)
 #if videoInfo.blit_hw
     videoFlags = (videoFlags | SDL_HWACCEL)
 #end
-sdl_gl_setattribute(SDL_GL_DOUBLEBUFFER, 1)
-sdl_setvideomode(width, height, bpp, videoFlags)
-sdl_wm_setcaption(wintitle, icontitle)
+SDL_gl_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
+SDL_SetVideoMode(width, height, bpp, videoFlags)
+SDL_wm_SetCaption(wintitle, icontitle)
 
-glviewport(0, 0, width, height)
-glclearcolor(0.0, 0.0, 0.0, 0.0)
-glcleardepth(1.0)
-gldepthfunc(GL_LESS)
-glenable(GL_DEPTH_TEST)
-glshademodel(GL_SMOOTH)
+glViewPort(0, 0, width, height)
+glClearColor(0.0, 0.0, 0.0, 0.0)
+glClearDepth(1.0)
+glDepthFunc(GL_LESS)
+glEnable(GL_DEPTH_TEST)
+glShadeModel(GL_SMOOTH)
 
-glmatrixmode(GL_PROJECTION)
-glloadidentity()
+glMatrixMode(GL_PROJECTION)
+glLoadIdentity()
 
-gluperspective(45.0,width/height,0.1,100.0)
+gluPerspective(45.0,width/height,0.1,100.0)
 
-glmatrixmode(GL_MODELVIEW)
+glMatrixMode(GL_MODELVIEW)
 
 ### auxiliary functions
 
 function cube(size)  # the cube function now includes surface normal specification for proper lighting
-  glbegin(GL_QUADS)
+  glBegin(GL_QUADS)
     # Front Face
-    glnormal(0.0,0.0,1.0)
-    gltexcoord(0.0, 0.0)
-    glvertex(-size, -size, size)
-    gltexcoord(1.0, 0.0)
-    glvertex(size, -size, size)
-    gltexcoord(1.0, 1.0)
-    glvertex(size, size, size)
-    gltexcoord(0.0, 1.0)
-    glvertex(-size, size, size)
+    glNormal(0.0,0.0,1.0)
+    glTexCoord(0.0, 0.0)
+    glVertex(-size, -size, size)
+    glTexCoord(1.0, 0.0)
+    glVertex(size, -size, size)
+    glTexCoord(1.0, 1.0)
+    glVertex(size, size, size)
+    glTexCoord(0.0, 1.0)
+    glVertex(-size, size, size)
 
     # Back Face
-    glnormal(0.0,0.0,-1.0)
-    gltexcoord(1.0, 0.0)
-    glvertex(-size, -size, -size)
-    gltexcoord(1.0, 1.0)
-    glvertex(-size, size, -size)
-    gltexcoord(0.0, 1.0)
-    glvertex(size, size, -size)
-    gltexcoord(0.0, 0.0)
-    glvertex(size, -size, -size)
+    glNormal(0.0,0.0,-1.0)
+    glTexCoord(1.0, 0.0)
+    glVertex(-size, -size, -size)
+    glTexCoord(1.0, 1.0)
+    glVertex(-size, size, -size)
+    glTexCoord(0.0, 1.0)
+    glVertex(size, size, -size)
+    glTexCoord(0.0, 0.0)
+    glVertex(size, -size, -size)
 
     # Top Face
-    glnormal(0.0,1.0,0.0)
-    gltexcoord(0.0, 1.0)
-    glvertex(-size, size, -size)
-    gltexcoord(0.0, 0.0)
-    glvertex(-size, size, size)
-    gltexcoord(1.0, 0.0)
-    glvertex(size, size, size)
-    gltexcoord(1.0, 1.0)
-    glvertex(size, size, -size)
+    glNormal(0.0,1.0,0.0)
+    glTexCoord(0.0, 1.0)
+    glVertex(-size, size, -size)
+    glTexCoord(0.0, 0.0)
+    glVertex(-size, size, size)
+    glTexCoord(1.0, 0.0)
+    glVertex(size, size, size)
+    glTexCoord(1.0, 1.0)
+    glVertex(size, size, -size)
 
     # Bottom Face
-    glnormal(0.0,-1.0,0.0)
-    gltexcoord(1.0, 1.0)
-    glvertex(-size, -size, -size)
-    gltexcoord(0.0, 1.0)
-    glvertex(size, -size, -size)
-    gltexcoord(0.0, 0.0)
-    glvertex(size, -size, size)
-    gltexcoord(1.0, 0.0)
-    glvertex(-size, -size, size)
+    glNormal(0.0,-1.0,0.0)
+    glTexCoord(1.0, 1.0)
+    glVertex(-size, -size, -size)
+    glTexCoord(0.0, 1.0)
+    glVertex(size, -size, -size)
+    glTexCoord(0.0, 0.0)
+    glVertex(size, -size, size)
+    glTexCoord(1.0, 0.0)
+    glVertex(-size, -size, size)
 
     # Right Face
-    glnormal(1.0,0.0,0.0)
-    gltexcoord(1.0, 0.0)
-    glvertex(size, -size, -size)
-    gltexcoord(1.0, 1.0)
-    glvertex(size, size, -size)
-    gltexcoord(0.0, 1.0)
-    glvertex(size, size, size)
-    gltexcoord(0.0, 0.0)
-    glvertex(size, -size, size)
+    glNormal(1.0,0.0,0.0)
+    glTexCoord(1.0, 0.0)
+    glVertex(size, -size, -size)
+    glTexCoord(1.0, 1.0)
+    glVertex(size, size, -size)
+    glTexCoord(0.0, 1.0)
+    glVertex(size, size, size)
+    glTexCoord(0.0, 0.0)
+    glVertex(size, -size, size)
 
     # Left Face
-    glnormal(-1.0,0.0,0.0)
-    gltexcoord(0.0, 0.0)
-    glvertex(-size, -size, -size)
-    gltexcoord(1.0, 0.0)
-    glvertex(-size, -size, size)
-    gltexcoord(1.0, 1.0)
-    glvertex(-size, size, size)
-    gltexcoord(0.0, 1.0)
-    glvertex(-size, size, -size)
-  glend()
+    glNormal(-1.0,0.0,0.0)
+    glTexCoord(0.0, 0.0)
+    glVertex(-size, -size, -size)
+    glTexCoord(1.0, 0.0)
+    glVertex(-size, -size, size)
+    glTexCoord(1.0, 1.0)
+    glVertex(-size, size, size)
+    glTexCoord(0.0, 1.0)
+    glVertex(-size, size, -size)
+  glEnd()
 end
 
 ### end of auxiliary functions
@@ -157,67 +157,67 @@ tex   = Array(Uint32,3) # generating 3 textures
 
 img, w, h = glimread(expanduser("~/.julia/SDL/Examples/NeHe/tut8/glass.bmp"))
 
-glgentextures(3,tex)
-glbindtexture(GL_TEXTURE_2D,tex[1])
-gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-glteximage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+glGenTextures(3,tex)
+glBindTexture(GL_TEXTURE_2D,tex[1])
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+glTexImage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 
-glbindtexture(GL_TEXTURE_2D,tex[2])
-gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-glteximage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+glBindTexture(GL_TEXTURE_2D,tex[2])
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+glTexImage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 
-glbindtexture(GL_TEXTURE_2D,tex[3])
-gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST)
-glteximage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+glBindTexture(GL_TEXTURE_2D,tex[3])
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST)
+glTexImage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 
-glubuild2dmipmaps(GL_TEXTURE_2D, 3, w, h, GL_RGB, GL_UNSIGNED_BYTE, img)
+gluBuild2dMipMaps(GL_TEXTURE_2D, 3, w, h, GL_RGB, GL_UNSIGNED_BYTE, img)
 
 # initialize lights
 
-gllightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient)
-gllightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse)
-gllightfv(GL_LIGHT1, GL_POSITION, LightPosition)
+glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient)
+glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse)
+glLightfv(GL_LIGHT1, GL_POSITION, LightPosition)
 
-glenable(GL_LIGHT1)
+glEnable(GL_LIGHT1)
 
 # enable texture mapping
 
-glenable(GL_TEXTURE_2D)
-glenable(GL_LIGHTING)
-glenable(GL_BLEND)
+glEnable(GL_TEXTURE_2D)
+glEnable(GL_LIGHTING)
+glEnable(GL_BLEND)
 
 # enable alpha blending for textures
 
-glblendfunc(GL_SRC_ALPHA, GL_ONE)
-glcolor(1.0, 1.0, 1.0, 0.5)
+glBlendFunc(GL_SRC_ALPHA, GL_ONE)
+glColor(1.0, 1.0, 1.0, 0.5)
 
 # main drawing loop
 
 while true
-    glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glloadidentity()
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glLoadIdentity()
 
-    gltranslate(0.0, 0.0, z)
+    glTranslate(0.0, 0.0, z)
 
-    glrotate(xrot,1.0,0.0,0.0)
-    glrotate(yrot,0.0,1.0,0.0)
+    glRotate(xrot,1.0,0.0,0.0)
+    glRotate(yrot,0.0,1.0,0.0)
 
-    glbindtexture(GL_TEXTURE_2D,tex[filter])
+    glBindTexture(GL_TEXTURE_2D,tex[filter])
     cube(cube_size)
 
     xrot +=xspeed
     yrot +=yspeed
 
-    sdl_gl_swapbuffers()
+    SDL_gl_SwapBuffers()
 
-    sdl_pumpevents()
-    if sdl_getticks() - lastkeycheckTime >= key_repeatinterval
-        keystate         = sdl_getkeystate()
+    SDL_PumpEvents()
+    if SDL_GetTicks() - lastkeycheckTime >= key_repeatinterval
+        keystate         = SDL_GetKeystate()
         keystate_checked = true
-        lastkeycheckTime = sdl_getticks()
+        lastkeycheckTime = SDL_GetTicks()
     end
 
     # Sampling rates for event processing are so fast that a single key press
@@ -232,11 +232,11 @@ while true
             println("Blend was: $blend")
             blend = (blend ? false : true)
             if blend
-                glenable(GL_BLEND)
-                gldisable(GL_DEPTH_TEST)
+                glEnable(GL_BLEND)
+                glDisable(GL_DEPTH_TEST)
             else
-                gldisable(GL_BLEND)
-                glenable(GL_DEPTH_TEST)
+                glDisable(GL_BLEND)
+                glEnable(GL_DEPTH_TEST)
             end
             println("Blend is now: $blend")
         elseif keystate[SDLK_l] == true
@@ -244,9 +244,9 @@ while true
             light = (light ? false : true)
             println("Light is now: $light")
             if light
-                glenable(GL_LIGHTING)
+                glEnable(GL_LIGHTING)
             else
-                gldisable(GL_LIGHTING)
+                glDisable(GL_LIGHTING)
             end
         elseif keystate[SDLK_f] == true
             println("Filter was: $filter")

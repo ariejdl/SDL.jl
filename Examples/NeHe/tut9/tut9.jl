@@ -59,8 +59,8 @@ key_repeatinterval = 75 #ms
 
 # open SDL window with an OpenGL context
 
-sdl_init(SDL_INIT_VIDEO)
-#videoInfo = sdl_getvideoinfo()
+SDL_Init(SDL_INIT_VIDEO)
+#videoInfo = SDL_GetVideoInfo()
 videoFlags = (SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE | SDL_RESIZABLE)
 #if videoInfo.hw_available
     videoFlags = (videoFlags | SDL_HWSURFACE)
@@ -70,22 +70,22 @@ videoFlags = (SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE | SDL_RESIZABLE)
 #if videoInfo.blit_hw
     videoFlags = (videoFlags | SDL_HWACCEL)
 #end
-sdl_gl_setattribute(SDL_GL_DOUBLEBUFFER, 1)
-sdl_setvideomode(width, height, bpp, videoFlags)
-sdl_wm_setcaption(wintitle, icontitle)
+SDL_gl_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
+SDL_SetVideoMode(width, height, bpp, videoFlags)
+SDL_wm_SetCaption(wintitle, icontitle)
 
-glviewport(0, 0, width, height)
-glclearcolor(0.0, 0.0, 0.0, 0.0)
-glcleardepth(1.0)
-glshademodel(GL_SMOOTH)
-glhint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
+glViewPort(0, 0, width, height)
+glClearColor(0.0, 0.0, 0.0, 0.0)
+glClearDepth(1.0)
+glShadeModel(GL_SMOOTH)
+glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
 
-glmatrixmode(GL_PROJECTION)
-glloadidentity()
+glMatrixMode(GL_PROJECTION)
+glLoadIdentity()
 
-gluperspective(45.0,width/height,0.1,100.0)
+gluPerspective(45.0,width/height,0.1,100.0)
 
-glmatrixmode(GL_MODELVIEW)
+glMatrixMode(GL_MODELVIEW)
 
 # load textures from images
 
@@ -93,70 +93,70 @@ tex   = Array(Uint32,1) # generating 1 textures
 
 img, w, h = glimread(expanduser("~/.julia/SDL/Examples/NeHe/tut9/Star.bmp"))
 
-glgentextures(1,tex)
-glbindtexture(GL_TEXTURE_2D,tex[1])
-gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-glteximage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+glGenTextures(1,tex)
+glBindTexture(GL_TEXTURE_2D,tex[1])
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+glTexImage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 
 # enable texture mapping and alpha blending
 
-glenable(GL_TEXTURE_2D)
-glenable(GL_BLEND)
-glblendfunc(GL_SRC_ALPHA, GL_ONE)
+glEnable(GL_TEXTURE_2D)
+glEnable(GL_BLEND)
+glBlendFunc(GL_SRC_ALPHA, GL_ONE)
 
 # main drawing loop
 
 while true
-    glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glloadidentity()
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glLoadIdentity()
 
-    glbindtexture(GL_TEXTURE_2D,tex[1])
+    glBindTexture(GL_TEXTURE_2D,tex[1])
 
     for loop = 1:STAR_NUM
 
-        glloadidentity()
+        glLoadIdentity()
 
-        gltranslate(0.0, 0.0, zoom)
+        glTranslate(0.0, 0.0, zoom)
 
-        glrotate(tilt,1.0,0.0,0.0)
-        glrotate(stars[loop].angle, 0.0, 1.0, 0.0)
+        glRotate(tilt,1.0,0.0,0.0)
+        glRotate(stars[loop].angle, 0.0, 1.0, 0.0)
 
-        gltranslate(stars[loop].dist, 0.0, 0.0)
+        glTranslate(stars[loop].dist, 0.0, 0.0)
 
-        glrotate(-stars[loop].angle, 0.0, 1.0, 0.0)
-        glrotate(-tilt,1.0,0.0,0.0)
+        glRotate(-stars[loop].angle, 0.0, 1.0, 0.0)
+        glRotate(-tilt,1.0,0.0,0.0)
 
         if twinkle
-            glcolor4ub(stars[STAR_NUM - loop + 1].r,stars[STAR_NUM - loop + 1].g,stars[STAR_NUM - loop + 1].b,255)
+            glColor4ub(stars[STAR_NUM - loop + 1].r,stars[STAR_NUM - loop + 1].g,stars[STAR_NUM - loop + 1].b,255)
 
-            glbegin(GL_QUADS)
-                gltexcoord(0.0, 0.0)
-                glvertex(-1.0, -1.0, 0.0)
-                gltexcoord(1.0, 0.0)
-                glvertex(1.0, -1.0, 0.0)
-                gltexcoord(1.0, 1.0)
-                glvertex(1.0, 1.0, 0.0)
-                gltexcoord(0.0, 1.0)
-                glvertex(-1.0, 1.0, 0.0)
-            glend()
+            glBegin(GL_QUADS)
+                glTexCoord(0.0, 0.0)
+                glVertex(-1.0, -1.0, 0.0)
+                glTexCoord(1.0, 0.0)
+                glVertex(1.0, -1.0, 0.0)
+                glTexCoord(1.0, 1.0)
+                glVertex(1.0, 1.0, 0.0)
+                glTexCoord(0.0, 1.0)
+                glVertex(-1.0, 1.0, 0.0)
+            glEnd()
         end
 
         # main star
 
-        glrotate(spin, 0.0, 0.0, 1.0)
-        glcolor4ub(stars[loop].r, stars[loop].g, stars[loop].b, 255)
+        glRotate(spin, 0.0, 0.0, 1.0)
+        glColor4ub(stars[loop].r, stars[loop].g, stars[loop].b, 255)
 
-        glbegin(GL_QUADS)
-            gltexcoord(0.0, 0.0)
-            glvertex(-1.0, -1.0, 0.0)
-            gltexcoord(1.0, 0.0)
-            glvertex(1.0, -1.0, 0.0)
-            gltexcoord(1.0, 1.0)
-            glvertex(1.0, 1.0, 0.0)
-            gltexcoord(0.0, 1.0)
-            glvertex(-1.0, 1.0, 0.0)
-        glend()
+        glBegin(GL_QUADS)
+            glTexCoord(0.0, 0.0)
+            glVertex(-1.0, -1.0, 0.0)
+            glTexCoord(1.0, 0.0)
+            glVertex(1.0, -1.0, 0.0)
+            glTexCoord(1.0, 1.0)
+            glVertex(1.0, 1.0, 0.0)
+            glTexCoord(0.0, 1.0)
+            glVertex(-1.0, 1.0, 0.0)
+        glEnd()
 
         spin              +=0.01
         stars[loop].angle +=loop/STAR_NUM
@@ -171,13 +171,13 @@ while true
 
     end
 
-    sdl_gl_swapbuffers()
+    SDL_gl_SwapBuffers()
 
-    sdl_pumpevents()
-    if sdl_getticks() - lastkeycheckTime >= key_repeatinterval
-        keystate         = sdl_getkeystate()
+    SDL_PumpEvents()
+    if SDL_GetTicks() - lastkeycheckTime >= key_repeatinterval
+        keystate         = SDL_GetKeystate()
         keystate_checked = true
-        lastkeycheckTime = sdl_getticks()
+        lastkeycheckTime = SDL_GetTicks()
     end
 
     # Sampling rates for event processing are so fast that a single key press
