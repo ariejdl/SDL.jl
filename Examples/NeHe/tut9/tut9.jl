@@ -8,7 +8,7 @@
 # Up/Down - increase/decrease tilt about x-axis
 
 
-# load necessary GL/SDL routines and image routines for loading textures
+# load necessary GL/SDL routines
 
 global OpenGLver="1.0"
 using OpenGL
@@ -32,18 +32,18 @@ type star
     angle::Float64
 end
 
-tempr = randi(256)
-tempg = randi(256)
-tempb = randi(256)
+tempr = rand(1:256)
+tempg = rand(1:256)
+tempb = rand(1:256)
 
 stars = [star(tempr,tempg,tempb,0.0,0.0)] # Julia doesn't like it when you try to initialize an empty array of
                                           # a composite type and try to fill it afterwards, so we
                                           # start with a 1-element vector and tack on values
 
 for loop = 1:STAR_NUM-1
-    tempr = randi(256)
-    tempg = randi(256)
-    tempb = randi(256)
+    tempr = rand(1:256)
+    tempg = rand(1:256)
+    tempb = rand(1:256)
     stars = push!(stars, star(tempr,tempg,tempb,loop/STAR_NUM*5.0,0.0))
 end # I haven't found a better way to make an array of composite types
 
@@ -70,11 +70,11 @@ videoFlags = (SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE | SDL_RESIZABLE)
 #if videoInfo.blit_hw
     videoFlags = (videoFlags | SDL_HWACCEL)
 #end
-SDL_gl_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
+SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
 SDL_SetVideoMode(width, height, bpp, videoFlags)
-SDL_wm_SetCaption(wintitle, icontitle)
+SDL_WM_SetCaption(wintitle, icontitle)
 
-glViewPort(0, 0, width, height)
+glViewport(0, 0, width, height)
 glClearColor(0.0, 0.0, 0.0, 0.0)
 glClearDepth(1.0)
 glShadeModel(GL_SMOOTH)
@@ -97,7 +97,7 @@ glGenTextures(1,tex)
 glBindTexture(GL_TEXTURE_2D,tex[1])
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-glTexImage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 
 # enable texture mapping and alpha blending
 
@@ -164,18 +164,18 @@ while true
 
         if stars[loop].dist < 0.0
             stars[loop].dist  +=5.0
-            stars[loop].r     = randi(256)
-            stars[loop].g     = randi(256)
-            stars[loop].b     = randi(256)
+            stars[loop].r     = rand(1:256)
+            stars[loop].g     = rand(1:256)
+            stars[loop].b     = rand(1:256)
         end
 
     end
 
-    SDL_gl_SwapBuffers()
+    SDL_GL_SwapBuffers()
 
     SDL_PumpEvents()
     if SDL_GetTicks() - lastkeycheckTime >= key_repeatinterval
-        keystate         = SDL_GetKeystate()
+        keystate         = SDL_GetKeyState()
         keystate_checked = true
         lastkeycheckTime = SDL_GetTicks()
     end

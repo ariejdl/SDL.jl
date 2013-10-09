@@ -36,11 +36,11 @@ videoFlags = (SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE | SDL_RESIZABLE)
 #if videoInfo.blit_hw
     videoFlags = (videoFlags | SDL_HWACCEL)
 #end
-SDL_gl_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
+SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
 SDL_SetVideoMode(width, height, bpp, videoFlags)
-SDL_wm_SetCaption(wintitle, icontitle)
+SDL_WM_SetCaption(wintitle, icontitle)
 
-glViewPort(0, 0, width, height)
+glViewport(0, 0, width, height)
 glClearColor(0.0, 0.0, 0.0, 0.0)
 glClearDepth(1.0)			 
 glDepthFunc(GL_LESS)	 
@@ -60,13 +60,13 @@ while true
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
 
-    SDL_gl_SwapBuffers()
+    SDL_GL_SwapBuffers()
 
     SDL_PumpEvents()
     if SDL_GetTicks() - lastkeycheckTime >= key_repeatinterval
-        keystate         = SDL_getkeystate()
+        keystate         = SDL_GetKeyState()
         keystate_checked = true
-        lastkeycheckTime = SDL_getticks()
+        lastkeycheckTime = SDL_GetTicks()
     end
 
     # Sampling rates for event processing are so fast that a single key press

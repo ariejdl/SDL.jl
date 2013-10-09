@@ -53,34 +53,9 @@ I suppose [Homebrew](http://mxcl.github.com/homebrew/) (the recommended choice
 from what I hear) or [MacPorts](https://www.macports.org) will be helpful for
 Mac users.
 
-NOTE: If you are on Linux, it is recommended that you use the proprietary
-drivers for your graphics card.  Open-source drivers produce poor performance
-and have caused X11 to crash before.  Mac and Windows users should be fine.
-However, I don't believe this package has been tested on either of those
-operating systems.
-
 #Usage notes
 
 Press 'q' in any of the NeHe examples to quit.
-
-PLEASE NOTE: When used in a Julia file, all of the function names are written in
-lowercase. For example:
-
-In C-SDL code, one would write,
-
-```c
-SDL_Init
-SDL_GetVideoInfo
-SDL_GL_SwapBuffers
-```
-
-In Julia-SDL code, one would write:
-
-```julia
-sdl_init
-sdl_getvideoinfo
-sdl_gl_swapbuffers
-```
 
 See the Examples/NeHe directory for translations of sixteen NeHe tutorials into
 Julia-SDL.  Controls are listed in the opening comments of each example.  
@@ -98,36 +73,15 @@ To try a NeHe example (e.g. tutorial 2), do
 require("SDL/Examples/NeHe/tut2/tut2.jl")
 ```
 
-###Some usage quirks:
-
-- Quitting an SDL instance by 'break'ing the main draw loop ('q' can be used to
-quit any of the NeHe examples) will put you back in the Julia REPL, but running the
-same code will produce nothing. You must run a different Julia-SDL file first,
-before you can return to the one you just ran.  (Also, trying multiple times to
-run the same Julia file over and over causes other Julia-SDL files to no longer
-load.  You will need to quit Julia and restart to regain sanity.)  This could
-just be an error that I am having, though, since I use dwm as my window
-manager, which can behave unconventionaly with some windows.
-- As a followup to the above, you can use sdl_quit to quit a Julia-SDL
-instance, but this will also close your current Julia REPL session.
-
 #Loading and using images as OpenGL textures
 
 NOTE: Examples with images will not work, unless you have ImageMagick installed on
 your system, since imread depends on it.
 
-1. Load the image using imread from Julia's image.jl file. (You will need to
-	 require("image") before imread will be available in the Main namespace.)
-2. Pass the image array into glimg (automatically exported when "using OpenGL"
-	 is evaluated). OpenGL expects upside-down, 1D image arrays in an RGB format
-	 and glimg performs the necessary conversion on the 3D image arrays produced
-	 by imread.
-3. Initialize an empty array of Uint32's to contain texture identifiers.  For
-	 example, an Array(Uint32,3) should be created if you want to make three
-	 different textures.
-4. Continue with the typical OpenGL image/texture process.
-5. See Examples 6 or greater in the Examples/NeHe directory for the relevant
-	 code.
+1. Load the image using glimread.  This is a wrapper around imread for Tim Holy's Images.jl package.  It parses the Image data returned by imread into a format that OpenGL prefers.
+2. Continue with the typical OpenGL image/texture process.
+3. See Examples 6 or greater in the Examples/NeHe directory for the relevant
+	 code
 	 
 #SDL Event Processing
 
@@ -135,7 +89,7 @@ Event processing does not follow the conventional C-SDL scheme of calling
 SDL_PollEvents() and friends.  The Julia version of this function is still in
 the works, since it requires some nimble processing/passing of nested structs.  
 
-To do event processing in Julia-SDL, one must call sdl_pumpevents() during
+To do event processing in Julia-SDL, one must call SDL_PumpEvents() during
 every iteration of the main draw loop and, optionally, parse events at given
 intervals.
 
@@ -148,11 +102,11 @@ while true
 
 	# drawing routines (clear screen, swap buffers, etc.)
 
-	sdl_pumpevents()
-	if sdl_getticks() - lastkeycheckTime >= key_repeatinterval
-			keystate         = sdl_getkeystate()
+	SDL_PumpEvents()
+	if SDL_GetTicks() - lastkeycheckTime >= key_repeatinterval
+			keystate         = sdl_GetKeyState()
 			keystate_checked = true
-			lastkeycheckTime = sdl_getticks()
+			lastkeycheckTime = SDL_GetTicks()
 	end
 			
 	if keystate_checked == true

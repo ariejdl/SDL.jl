@@ -25,8 +25,8 @@ key_repeatinterval = 75 #ms
 
 # open SDL window with an OpenGL context
 
-sdl_Init(SDL_INIT_VIDEO)
-#videoInfo = sdl_GetVideoInfo()
+SDL_Init(SDL_INIT_VIDEO)
+#videoInfo = SDL_GetVideoInfo()
 videoFlags = (SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE | SDL_RESIZABLE)
 #if videoInfo.hw_available
     videoFlags = (videoFlags | SDL_HWSURFACE)
@@ -36,11 +36,11 @@ videoFlags = (SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE | SDL_RESIZABLE)
 #if videoInfo.blit_hw
     videoFlags = (videoFlags | SDL_HWACCEL)
 #end
-sdl_gl_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
-sdl_SetVideoMode(width, height, bpp, videoFlags)
-sdl_wm_SetCaption(wintitle, icontitle)
+SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
+SDL_SetVideoMode(width, height, bpp, videoFlags)
+SDL_WM_SetCaption(wintitle, icontitle)
 
-glViewPort(0, 0, width, height)
+glViewport(0, 0, width, height)
 glClearColor(0.0, 0.0, 0.0, 0.0)
 glClearDepth(1.0)			 
 glDepthFunc(GL_LESS)	 
@@ -79,11 +79,11 @@ while true
         glVertex(-1.0,-1.0,0.0)
     glEnd()
 
-    SDL_gl_SwapBuffers()
+    SDL_GL_SwapBuffers()
 
     SDL_PumpEvents()
     if SDL_GetTicks() - lastkeycheckTime >= key_repeatinterval
-        keystate         = SDL_GetKeystate()
+        keystate         = SDL_GetKeyState()
         keystate_checked = true
         lastkeycheckTime = SDL_GetTicks()
     end

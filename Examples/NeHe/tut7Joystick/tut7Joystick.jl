@@ -10,7 +10,7 @@
 
 # TODO: Joystick functionality is currently untested.
 
-# load necessary GL/SDL routines and image routines for loading textures
+# load necessary GL/SDL routines
 
 global OpenGLver="1.0"
 using OpenGL
@@ -59,16 +59,16 @@ videoFlags = (SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE | SDL_RESIZABLE)
 #if videoInfo.blit_hw
     videoFlags = (videoFlags | SDL_HWACCEL)
 #end
-SDL_gl_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
+SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
 SDL_SetVideoMode(width, height, bpp, videoFlags)
-SDL_wm_SetCaption(wintitle, icontitle)
+SDL_WM_SetCaption(wintitle, icontitle)
 
 # initialize joystick
 
 SDL_JoystickEventState(SDL_ENABLE)
 joystick = SDL_JoystickOpen(0)
 
-glViewPort(0, 0, width, height)
+glViewport(0, 0, width, height)
 glClearColor(0.0, 0.0, 0.0, 0.0)
 glClearDepth(1.0)
 glDepthFunc(GL_LESS)
@@ -166,19 +166,19 @@ glGenTextures(3,tex)
 glBindTexture(GL_TEXTURE_2D,tex[1])
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-glTexImage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 
 glBindTexture(GL_TEXTURE_2D,tex[2])
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-glTexImage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 
 glBindTexture(GL_TEXTURE_2D,tex[3])
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST)
-glTexImage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 
-gluBuild2dMipMaps(GL_TEXTURE_2D, 3, w, h, GL_RGB, GL_UNSIGNED_BYTE, img)
+gluBuild2DMipmaps(GL_TEXTURE_2D, 3, w, h, GL_RGB, GL_UNSIGNED_BYTE, img)
 
 # initialize lights
 
@@ -210,11 +210,11 @@ while true
     xrot +=xspeed
     yrot +=yspeed
 
-    SDL_gl_SwapBuffers()
+    SDL_GL_SwapBuffers()
 
     SDL_PumpEvents()
     if SDL_GetTicks() - lastkeycheckTime >= key_repeatinterval
-        keystate         = SDL_GetKeystate()
+        keystate         = SDL_GetKeyState()
         keystate_checked = true
         lastkeycheckTime = SDL_GetTicks()
     end
