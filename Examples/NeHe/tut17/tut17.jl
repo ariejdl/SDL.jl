@@ -104,20 +104,20 @@ end
 
 tex       = Array(Uint32,2) # generating 2 textures
 
-img, w, h = glimread(expanduser("~/.julia/SDL/Examples/NeHe/tut17/font.bmp"))
+imgFont, wFont, hFont = glimread(expanduser("~/.julia/SDL/Examples/NeHe/tut17/font.bmp"))
 
-img, w, h = glimread(expanduser("~/.julia/SDL/Examples/NeHe/tut17/bumps.bmp"))
+imgBumps, wBumps, hBumps = glimread(expanduser("~/.julia/SDL/Examples/NeHe/tut17/bumps.bmp"))
 
 glGenTextures(2,tex)
 glBindTexture(GL_TEXTURE_2D,tex[1])
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img_font)
+glTexImage2D(GL_TEXTURE_2D, 0, 3, wFont, hFont, 0, GL_RGB, GL_UNSIGNED_BYTE, imgFont)
 
 glBindTexture(GL_TEXTURE_2D,tex[2])
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img_bumps)
+glTexImage2D(GL_TEXTURE_2D, 0, 3, wBumps, hBumps, 0, GL_RGB, GL_UNSIGNED_BYTE, imgBumps)
 
 # enable texture mapping & blending
 
