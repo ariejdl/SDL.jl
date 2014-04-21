@@ -2,11 +2,11 @@ using BinDeps
 
 @BinDeps.setup
 
-deps = [ libSDL = library_dependency("SDL", aliases = ["libSDL", "SDL"])
-	      SDLgfx = library_dependency("SDL_gfx", aliases = ["libSDL_gfx"], depends = [libSDL], os = :Unix)
-	      SDLimage = library_dependency("SDL_image", aliases = ["libSDL_image"], depends = [libSDL], os = :Unix)
-	      SDLmixer = library_dependency("SDL_mixer", aliases = ["libSDL_mixer"], depends = [libSDL], os = :Unix)
-	      SDLttf = library_dependency("SDL_ttf", aliases = ["libSDL_ttf"], depends = [libSDL], os = :Unix) ]
+libSDL = library_dependency("libSDL", aliases = ["libSDL", "SDL"])
+SDLgfx = library_dependency("libSDL_gfx", aliases = ["libSDL_gfx"], depends = [libSDL], os = :Unix)
+SDLimage = library_dependency("libSDL_image", aliases = ["libSDL_image"], depends = [libSDL], os = :Unix)
+SDLmixer = library_dependency("libSDL_mixer", aliases = ["libSDL_mixer"], depends = [libSDL], os = :Unix)
+SDLttf = library_dependency("libSDL_ttf", aliases = ["libSDL_ttf"], depends = [libSDL], os = :Unix)
 
 @windows_only begin
 	using WinRPM
@@ -41,4 +41,4 @@ end
     		 "SDL_ttf-devel" => SDLttf})
 end
 
-@BinDeps.install
+@BinDeps.install [:libSDL => :libSDL]
