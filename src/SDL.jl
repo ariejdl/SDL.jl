@@ -5,7 +5,7 @@ module SDL
 
 import GetC.@getCFun
 
-const libSDL = @windows? "SDL" : "libSDL"
+include("../deps/deps.jl")
 
 #TODO: read struct info from SDL_GetVideoInfo into this composite type
 #type SDL_VideoInfo
