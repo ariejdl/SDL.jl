@@ -1,8 +1,9 @@
 #  Jasper den Ouden 02-08-2012
 # Placed in public domain.
 
-
 module SDL
+
+include("../deps/deps.jl")
 
 import GetC.@getCFun
 
@@ -26,28 +27,28 @@ import GetC.@getCFun
 	#current_h::Int32
 #end
 
-@getCFun "libSDL" SDL_FreeSurface SDL_FreeSurface(ptr::Ptr{Void})::Void
+@getCFun libSDL SDL_FreeSurface SDL_FreeSurface(ptr::Ptr{Void})::Void
 export SDL_FreeSurface
-@getCFun "libSDL" SDL_GL_SwapBuffers SDL_GL_SwapBuffers()::Void
+@getCFun libSDL SDL_GL_SwapBuffers SDL_GL_SwapBuffers()::Void
 export SDL_GL_SwapBuffers
-@getCFun "libSDL" SDL_Init SDL_Init(flags::Uint32)::Int32
+@getCFun libSDL SDL_Init SDL_Init(flags::Uint32)::Int32
 export SDL_Init
-@getCFun "libSDL" SDL_SetVideoMode SDL_SetVideoMode(width::Int32,height::Int32,bpp::Int32,flags::Uint32)::Ptr{Void}
+@getCFun libSDL SDL_SetVideoMode SDL_SetVideoMode(width::Int32,height::Int32,bpp::Int32,flags::Uint32)::Ptr{Void}
 export SDL_SetVideoMode
-@getCFun "libSDL" SDL_GetVideoInfo SDL_GetVideoInfo()::Ptr{Void}
+@getCFun libSDL SDL_GetVideoInfo SDL_GetVideoInfo()::Ptr{Void}
 export SDL_GetVideoInfo
-@getCFun "libSDL" SDL_WM_SetCaption SDL_WM_SetCaption(title::Ptr{Uint8},icon::Ptr{Uint8})::Int32
+@getCFun libSDL SDL_WM_SetCaption SDL_WM_SetCaption(title::Ptr{Uint8},icon::Ptr{Uint8})::Int32
 export SDL_WM_SetCaption
-@getCFun "libSDL" SDL_GL_SetAttribute SDL_GL_SetAttribute(attr::Uint32,value::Int32)::Void
+@getCFun libSDL SDL_GL_SetAttribute SDL_GL_SetAttribute(attr::Uint32,value::Int32)::Void
 export SDL_GL_SetAttribute
-@getCFun "libSDL" SDL_Quit SDL_Quit()::Void
+@getCFun libSDL SDL_Quit SDL_Quit()::Void
 export SDL_Quit
 
 #TODO: The C function returns a Uint32. While the un-commented code returns an intuitive
 #number, I'm not comfortable with specifying an invalid return type. 
-#@getCFun "libSDL" SDL_GetTicks SDL_GetTicks()::Uint32
+#@getCFun libSDL SDL_GetTicks SDL_GetTicks()::Uint32
 #export SDL_GetTicks
-@getCFun "libSDL" SDL_GetTicks SDL_GetTicks()::Int32
+@getCFun libSDL SDL_GetTicks SDL_GetTicks()::Int32
 export SDL_GetTicks
 
 #TODO: read up on the event system in SDL
@@ -72,20 +73,20 @@ export SDL_GetTicks
 #function SDL_PollEvent(Event::SDL_Event)
     #iostr = IOString()
     #pack(iostr, Event)
-    #errnum = ccall((:SDL_PollEvent, "libSDL"), Int32, (Ptr{Void},), iostr.data)
+    #errnum = ccall((:SDL_PollEvent, libSDL), Int32, (Ptr{Void},), iostr.data)
     #Event2 = unpack(iostr, Event)
     #return Event.etype
 #end
 #export SDL_PollEvent
 
-@getCFun "libSDL" SDL_PumpEvents SDL_PumpEvents()::Void
+@getCFun libSDL SDL_PumpEvents SDL_PumpEvents()::Void
 export SDL_PumpEvents
-@getCFun "libSDL" SDL_EnableKeyRepeat SDL_EnableKeyRepeat(delay::Int32,interval::Int32)::Int32
+@getCFun libSDL SDL_EnableKeyRepeat SDL_EnableKeyRepeat(delay::Int32,interval::Int32)::Int32
 export SDL_EnableKeyRepeat
 
 function SDL_GetKeyState()
     numkeys = Array(Int32,1)
-    keystate = ccall((:SDL_GetKeyState, "libSDL"), Ptr{Uint8}, (Ptr{Int32}, ), numkeys)
+    keystate = ccall((:SDL_GetKeyState, libSDL), Ptr{Uint8}, (Ptr{Int32}, ), numkeys)
     keystate = bool(pointer_to_array(keystate, (int(1),int(numkeys[1]))))
     return keystate[2:end] #TODO: find a better way to solve the off-by-one indexing issue
 end
@@ -94,7 +95,7 @@ export SDL_GetKeyState
 function SDL_GetMouseState()
     x = Array(Int32,1)
     y = Array(Int32,1)
-    button = ccall((:SDL_GetMouseState, "libSDL"), Uint8, (Ptr{Int32}, Ptr{Int32}), x, y)
+    button = ccall((:SDL_GetMouseState, libSDL), Uint8, (Ptr{Int32}, Ptr{Int32}), x, y)
     return int(x[1]), int(y[1]), button
 end
 export SDL_GetMouseState
@@ -102,18 +103,18 @@ export SDL_GetMouseState
 function SDL_GetRelativeMouseState()
     x = Array(Int32,1)
     y = Array(Int32,1)
-    button = ccall((:SDL_GetRelativeMouseState, "libSDL"), Uint8, (Ptr{Int32}, Ptr{Int32}), x, y)
+    button = ccall((:SDL_GetRelativeMouseState, libSDL), Uint8, (Ptr{Int32}, Ptr{Int32}), x, y)
     return int(x[1]), int(y[1]), button
 end
 export SDL_GetRelativeMouseState
 
-@getCFun "libSDL" SDL_JoystickEventState SDL_JoystickEventState(state::Int32)::Int32
+@getCFun libSDL SDL_JoystickEventState SDL_JoystickEventState(state::Int32)::Int32
 export SDL_JoystickEventState
-@getCFun "libSDL" SDL_JoystickOpen SDL_JoystickOpen(index::Int32)::Ptr{Void}
+@getCFun libSDL SDL_JoystickOpen SDL_JoystickOpen(index::Int32)::Ptr{Void}
 export SDL_JoystickOpen
-@getCFun "libSDL" SDL_JoystickGetButton SDL_JoystickGetButton(joystick::Ptr{Void},button::Int32)::Uint8
+@getCFun libSDL SDL_JoystickGetButton SDL_JoystickGetButton(joystick::Ptr{Void},button::Int32)::Uint8
 export SDL_JoystickGetButton
-@getCFun "libSDL" SDL_JoystickGetAxis SDL_JoystickGetAxis(joystick::Ptr{Void},axis::Int32)::Int16
+@getCFun libSDL SDL_JoystickGetAxis SDL_JoystickGetAxis(joystick::Ptr{Void},axis::Int32)::Int16
 export SDL_JoystickGetAxis
 
 const SDL_INIT_VIDEO              = 0x00000020
