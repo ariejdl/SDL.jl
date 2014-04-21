@@ -25,18 +25,20 @@ end
 	provides(Homebrew.HB, "sdl_ttf", SDLttf, os = :Darwin)
 end
 
-provides(AptGet,
-		{"libsdl1.2-dev" => libSDL,
-		 "libsdl-gfx1.2-dev" => SDLgfx,
-		 "libsdl-image1.2-dev" => SDLimage,
-		 "libsdl-mixer1.2-dev" => SDLmixer,
-		 "libsdl-ttf2.0-dev" => SDLttf})
+@linux_only begin
+    provides(AptGet,
+	    	{"libsdl1.2-dev" => libSDL,
+	    	 "libsdl-gfx1.2-dev" => SDLgfx,
+	    	 "libsdl-image1.2-dev" => SDLimage,
+	    	 "libsdl-mixer1.2-dev" => SDLmixer,
+	    	 "libsdl-ttf2.0-dev" => SDLttf})
 
-provides(Yum,
-		{"SDL-devel" => libSDL,
-		 "SDL_gfx-devel" => SDLgfx,
-		 "SDL_image-devel" => SDLimage,
-		 "SDL_mixer-devel" => SDLmixer,
-		 "SDL_ttf-devel" => SDLttf})
+    provides(Yum,
+    		{"SDL-devel" => libSDL,
+    		 "SDL_gfx-devel" => SDLgfx,
+    		 "SDL_image-devel" => SDLimage,
+    		 "SDL_mixer-devel" => SDLmixer,
+    		 "SDL_ttf-devel" => SDLttf})
+end
 
 @BinDeps.install
