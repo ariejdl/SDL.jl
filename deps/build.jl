@@ -5,7 +5,7 @@ using BinDeps
 deps = [ libSDL = library_dependency("SDL", aliases = ["libSDL", "SDL"])
 	      SDLgfx = library_dependency("SDL_gfx", aliases = ["libSDL_gfx"], depends = [libSDL], os = :Unix)
 	      SDLimage = library_dependency("SDL_image", aliases = ["libSDL_image"], depends = [libSDL], os = :Unix)
-	      SDLmixer = library_dependency("SDL_mixer", aliases = ["libSDL_mixer"], depends = [libSDL], os = :Unix) 
+	      SDLmixer = library_dependency("SDL_mixer", aliases = ["libSDL_mixer"], depends = [libSDL], os = :Unix)
 	      SDLttf = library_dependency("SDL_ttf", aliases = ["libSDL_ttf"], depends = [libSDL], os = :Unix) ]
 
 @windows_only begin
@@ -34,7 +34,7 @@ provides(AptGet,
 
 provides(Yum,
 		{"SDL-devel" => libSDL,
-		 "SDL_gfx-devel" =>, SDLgfx,
+		 "SDL_gfx-devel" => SDLgfx,
 		 "SDL_image-devel" => SDLimage,
 		 "SDL_mixer-devel" => SDLmixer,
 		 "SDL_ttf-devel" => SDLttf})
