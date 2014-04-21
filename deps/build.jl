@@ -10,7 +10,7 @@ deps = [ libSDL = library_dependency("SDL", aliases = ["libSDL", "SDL"])
 
 @windows_only begin
 	using WinRPM
-	provides(WinRPM.RPM, "SDL", libSDL, os = :Windows)
+	provides(WinRPM.RPM, "libSDL", libSDL, os = :Windows)
 end
 
 @osx_only begin
@@ -18,11 +18,11 @@ end
 		error("Hombrew package not installed, please run Pkg.add(\"Homebrew\")")
 	end
 	using Homebrew
-	provides ( Homebrew.HB, "sdl", libSDL, os = :Darwin )
-	provides ( Homebrew.HB, "sdl_gfx", SDLgfx, os = :Darwin )
-	provides ( Homebrew.HB, "sdl_image", SDLimage, os = :Darwin )
-	provides ( Homebrew.HB, "sdl_mixer", SDLmixer, os = :Darwin )
-	provides ( Homebrew.HB, "sdl_ttf", SDLttf, os = :Darwin )
+	provides(Homebrew.HB, "sdl", libSDL, os = :Darwin)
+	provides(Homebrew.HB, "sdl_gfx", SDLgfx, os = :Darwin)
+	provides(Homebrew.HB, "sdl_image", SDLimage, os = :Darwin)
+	provides(Homebrew.HB, "sdl_mixer", SDLmixer, os = :Darwin)
+	provides(Homebrew.HB, "sdl_ttf", SDLttf, os = :Darwin)
 end
 
 provides(AptGet,
@@ -39,4 +39,4 @@ provides(Yum,
 		 "SDL_mixer-devel" => SDLmixer,
 		 "SDL_ttf-devel" => SDLttf})
 
-@BinDeps.install [:libSDL => :SDL, :SDLgfx => :SDL_gfx, :SDLimage => :SDL_image, :SDLmixer => :SDL_mixer, :SDLttf => :SDL_ttf]
+@BinDeps.install
