@@ -9,8 +9,9 @@
 
 # load necessary GL/SDL routines
 
-global OpenGLver="1.0"
 using OpenGL
+@OpenGL.version "1.0"
+@OpenGL.load
 using SDL
 
 # initialize variables
