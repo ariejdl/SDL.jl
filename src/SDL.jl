@@ -5,7 +5,8 @@ module SDL
 
 import GetC.@getCFun
 
-include("../deps/deps.jl")
+using BinDeps
+@BinDeps.load_dependencies
 
 #TODO: read struct info from SDL_GetVideoInfo into this composite type
 #type SDL_VideoInfo
